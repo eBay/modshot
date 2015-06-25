@@ -1,0 +1,31 @@
+{
+  "name": "snapshot",
+  "version": "0.0.1",
+  "description": "AJAX utility for consuming chunked JSON responses",
+  "main": "./lib/snapshot.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:eBay/snapshot.git"
+  },
+  "author": "Senthil Padmanabhan <https://twitter.com/senthil_hi>",
+  "license": "MIT",
+  "dependencies": {
+    "casperjs": "~1.1.0-beta3",
+    "phantomcss": "~0.10.1",
+    "shelljs": "~0.5.1",
+    "nopt": "~3.0.3",
+    "lodash": "~3.9.3"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "load-grunt-tasks": "~3.2.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-babel": "~5.0.1"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
+}
