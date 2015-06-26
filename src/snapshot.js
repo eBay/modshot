@@ -1,5 +1,7 @@
 'use strict';
 
+var _Promise = require('babel-runtime/core-js/promise')['default'];
+
 var nopt = require('nopt'),
     path = require('path'),
     fs = require('fs'),
@@ -21,14 +23,7 @@ function log(message, override) {
 }
 
 function man() {
-    const USAGE = `
-    USAGE snapshot [options]*
-
-    Options:
-    --in-dir | -i       The input directory to recurse and fetch the HTML files. Uses current directory if not specified
-    --help | -h         Displays this information
-    --quiet | -q        Keeps the console clear from logging.
-    `;
+    var USAGE = '\n    USAGE snapshot [options]*\n\n    Options:\n    --in-dir | -i       The input directory to recurse and fetch the HTML files. Uses current directory if not specified\n    --help | -h         Displays this information\n    --quiet | -q        Keeps the console clear from logging.\n    ';
     log(USAGE);
 }
 
@@ -47,16 +42,16 @@ function exit(msg) {
 }
 
 function parseOptions() {
-    let knownOpts = {
-            'in-dir': path,
-            'quiet': Boolean,
-            'help': Boolean
-        },
+    var knownOpts = {
+        'in-dir': path,
+        'quiet': Boolean,
+        'help': Boolean
+    },
         shortHands = {
-            'i': ['--in-dir'],
-            'q': ['--quiet'],
-            'h': ['--help']
-        },
+        'i': ['--in-dir'],
+        'q': ['--quiet'],
+        'h': ['--help']
+    },
         resolved = _.assign(options, nopt(knownOpts, shortHands));
 
     if (resolved.help) {
@@ -67,8 +62,8 @@ function parseOptions() {
 }
 
 function stat(file) {
-    return new Promise((resolve, reject) => {
-        fs.stat(file, (err, stats) => {
+    return new _Promise(function (resolve, reject) {
+        fs.stat(file, function (err, stats) {
             if (err) {
                 return reject(err);
             }
@@ -78,8 +73,8 @@ function stat(file) {
 }
 
 function readdir(dir) {
-    return new Promise((resolve, reject) => {
-        fs.readdir(dir, (err, files) => {
+    return new _Promise(function (resolve, reject) {
+        fs.readdir(dir, function (err, files) {
             if (err) {
                 return reject(err);
             }
@@ -89,26 +84,32 @@ function readdir(dir) {
 }
 
 function getFileList(inputDir) {
-    let eventEmitter = new EventEmitter(),
-        readdirWrapper = dir => {
-            readdir(dir).then(list => {
-                return Promise.all(list.map(item => path.join(dir, item)).map(item => {
-                    return stat(item).then(stats =>  _.assign(stats, {
+    var eventEmitter = new EventEmitter(),
+        readdirWrapper = function readdirWrapper(dir) {
+        readdir(dir).then(function (list) {
+            return _Promise.all(list.map(function (item) {
+                return path.join(dir, item);
+            }).map(function (item) {
+                return stat(item).then(function (stats) {
+                    return _.assign(stats, {
                         origFile: item
-                    }));
-                }));
-            }).then(statsList => {
-                statsList.forEach((stats) => {
-                    let file = stats.origFile;
-                    if (stats.isDirectory(file)) {
-                        // Call the wrapper again
-                        readdirWrapper(file);
-                    } else if (stats.isFile(file) && path.extname(file) === '.html') {
-                        eventEmitter.emit('file', file);
-                    }
+                    });
                 });
-            }).catch(err => exit(err));
-        };
+            }));
+        }).then(function (statsList) {
+            statsList.forEach(function (stats) {
+                var file = stats.origFile;
+                if (stats.isDirectory(file)) {
+                    // Call the wrapper again
+                    readdirWrapper(file);
+                } else if (stats.isFile(file) && path.extname(file) === '.html') {
+                    eventEmitter.emit('file', file);
+                }
+            });
+        })['catch'](function (err) {
+            return exit(err);
+        });
+    };
 
     // call the wrapper
     readdirWrapper(inputDir);
@@ -119,7 +120,9 @@ function getFileList(inputDir) {
 
 // Start the main execution
 function exec() {
-    getFileList(options['in-dir']).on('file', file => console.log(file));
+    getFileList(options['in-dir']).on('file', function (file) {
+        return console.log(file);
+    });
 }
 
 function run() {
