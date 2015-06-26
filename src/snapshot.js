@@ -1,11 +1,9 @@
 'use strict';
 
-var test = ['senthil', 'shobi', 'sanjith', 'shaan'];
-test.map(name => name + ' S');
-console.log(test);
-
 var nopt = require('nopt'),
     path = require('path'),
+    fs = require('fs'),
+    EventEmitter = require('events').EventEmitter,
     _ = require('lodash');
 
 // Default options
@@ -15,9 +13,9 @@ var options = {
 };
 
 // log messages to the console
-function log(message) {
+function log(message, override) {
     // only log for non-quiet mode
-    if (!options.quiet) {
+    if (!options.quiet || override) {
         console.log(message);
     }
 }
@@ -39,7 +37,10 @@ function isCLI() {
     return require.main === module;
 }
 
-function exit() {
+function exit(msg) {
+    if (msg) {
+        log(msg, true);
+    }
     if (isCLI()) {
         return process.exit(0);
     }
@@ -65,9 +66,60 @@ function parseOptions() {
     return resolved;
 }
 
+function stat(file) {
+    return new Promise((resolve, reject) => {
+        fs.stat(file, (err, stats) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(stats);
+        });
+    });
+}
+
+function readdir(dir) {
+    return new Promise((resolve, reject) => {
+        fs.readdir(dir, (err, files) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(files);
+        });
+    });
+}
+
+function getFileList(inputDir) {
+    let eventEmitter = new EventEmitter(),
+        readdirWrapper = dir => {
+            readdir(dir).then(list => {
+                return Promise.all(list.map(item => path.join(dir, item)).map(item => {
+                    return stat(item).then(stats =>  _.assign(stats, {
+                        origFile: item
+                    }));
+                }));
+            }).then(statsList => {
+                statsList.forEach((stats) => {
+                    let file = stats.origFile;
+                    if (stats.isDirectory(file)) {
+                        // Call the wrapper again
+                        readdirWrapper(file);
+                    } else if (stats.isFile(file) && path.extname(file) === '.html') {
+                        eventEmitter.emit('file', file);
+                    }
+                });
+            }).catch(err => exit(err));
+        };
+
+    // call the wrapper
+    readdirWrapper(inputDir);
+
+    // return the Event Emitter
+    return eventEmitter;
+}
+
 // Start the main execution
 function exec() {
-
+    getFileList(options['in-dir']).on('file', file => console.log(file));
 }
 
 function run() {
@@ -80,5 +132,3 @@ function run() {
 if (isCLI()) {
     run();
 }
-
-console.log(parseOptions()['in-dir']);

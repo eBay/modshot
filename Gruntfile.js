@@ -4,6 +4,9 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         babel: {
+            options: {
+                optional: ['runtime']
+            },
             all: {
                 files: [{
                     expand: true,
