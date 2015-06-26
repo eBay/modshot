@@ -11,23 +11,32 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: 'src',
-                    src: ['**/*.js'],
-                    dest: 'lib',
+                    src: ['**/*.es6'],
+                    dest: 'src',
+                    ext: '.js'
+                },
+                {
+                    expand: true,
+                    cwd: 'test',
+                    src: ['**/*.es6'],
+                    dest: 'test',
                     ext: '.js'
                 }]
             }
         },
 
         watch: {
-            files: ['src/**/*.js'],
-            tasks: ['babel', 'livesnap']
+            files: ['!**/node_modules/**', '**/*.es6'],
+            tasks: ['build', 'livesnap']
         }
     });
 
     require('load-grunt-tasks')(grunt);
 
+    grunt.registerTask('build', ['babel']);
+
     grunt.registerTask('livesnap', function() {
         var shelljs = require('shelljs');
-        shelljs.exec('node lib/snapshot.js -i src/');
+        shelljs.exec('node src/snapshot -i ~/corp/git/skinv2/skin/test/');
     });
 };
