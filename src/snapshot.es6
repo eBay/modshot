@@ -3,7 +3,6 @@
 var nopt = require('nopt'),
     path = require('path'),
     fs = require('fs'),
-    rimraf = require('rimraf'),
     EventEmitter = require('events').EventEmitter,
     childSpawn = require("child_process").spawn,
     _ = require('lodash'),
@@ -93,18 +92,6 @@ function readdir(dir) {
     });
 }
 
-// Promise wrapper for rimraf
-function rmdir(dir) {
-    return new Promise((resolve, reject) => {
-        rimraf(dir, function(err) {
-            if (err) {
-                return reject(err);
-            }
-            resolve();
-        });
-    });
-}
-
 function getFileList(inputDir) {
     let eventEmitter = new EventEmitter(),
         readdirWrapper = dir => {
@@ -153,11 +140,8 @@ function runCasper(file) {
 // Start the main execution
 function exec() {
     getFileList(options['in-dir']).on('file', file => {
-        // Remove failed dir if any
-        rmdir(path.dirname(file) + 'screenshots/failed').then(() => {
-            // Run casper now
-            runCasper(file);
-        }).catch(exit); // jshint ignore:line
+        // Run casper now
+        runCasper(file);
     });
 }
 

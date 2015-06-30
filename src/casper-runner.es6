@@ -38,19 +38,12 @@ function exit(msg) {
     return casper.exit(0);
 }
 
-function rmDir(dir) {
-    // Test if the folder is empty before deleting it
-    if (fs.list(dir).length === 0) {
-        fs.removeTree(dir);
-    }
-}
-
 function initPhantomCSS(dirPath) {
     let screenshotRoot = dirPath + '/screenshots',
         failedComparisonsRoot = screenshotRoot + '/failed';
 
     // Remove failed directory if any
-    rmDir(failedComparisonsRoot);
+    fs.removeTree(failedComparisonsRoot);
 
     // Initialize phantomCSS
     phantomcss.init({
