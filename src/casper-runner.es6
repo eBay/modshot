@@ -4,6 +4,7 @@
 
 var require = patchRequire(require), // jshint ignore:line
     fs = require('fs'),
+    path = require('path'),
     phantomcssPath = fs.absolute(fs.workingDirectory) + '/node_modules/phantomcss',
     phantomcss = require(phantomcssPath + '/phantomcss'),
     _ = require('lodash');
@@ -37,26 +38,41 @@ function exit(msg) {
     return casper.exit(0);
 }
 
-function initPhantomCSS(dirPath) {
-    /*phantomcss.update({
-        rebase: casper.cli.get('rebase'),
-        casper: casper,
-        libraryRoot: dirPath + "/node_modules/phantomcss",
-        screenshotRoot: dirPath,
-        failedComparisonsRoot: dirPath + "/screenshots/failed",
-        addLabelToFailedImage: false,
-        mismatchTolerance: 0.00001
-    });*/
+function rmDir(dir) {
+    // Test if the folder is empty before deleting it
+    if (fs.list(dir).length === 0) {
+        fs.removeTree(dir);
+    }
 }
 
-function takeScreenshot() {
+function initPhantomCSS(dirPath) {
+    let screenshotRoot = dirPath + '/screenshots',
+        failedComparisonsRoot = screenshotRoot + '/failed';
+
+    // Remove failed directory if any
+    rmDir(failedComparisonsRoot);
+
+    // Initialize phantomCSS
+    phantomcss.init({
+        casper: casper,
+        cleanupComparisonImages: true,
+        libraryRoot: phantomcssPath,
+        screenshotRoot: screenshotRoot,
+        failedComparisonsRoot: failedComparisonsRoot,
+        addLabelToFailedImage: false,
+        mismatchTolerance: 0.00001
+    });
+}
+
+function takeScreenshot(screenshotName) {
+    phantomcss.screenshot('*', screenshotName);
 }
 
 function compareScreenshot() {
+    phantomcss.compareSession();
 }
 
 function run() {
-    console.log('####' + casper.cli.options);
     // Init options first
     initOptions();
 
@@ -67,7 +83,7 @@ function run() {
     }
 
     // Initialize PhantomCSS
-    initPhantomCSS();
+    initPhantomCSS(path.dirname(file));
 
     casper.test.begin('Visual testing - ' + options.file, test => {
         casper.start(file);
@@ -76,7 +92,7 @@ function run() {
         casper.viewport(1024, 768);
 
         // Take screenshot
-        casper.then(takeScreenshot);
+        casper.then(takeScreenshot.bind(undefined, path.basename(file, '.html')));
 
         // Compare screenshot
         casper.then(compareScreenshot);

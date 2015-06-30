@@ -154,7 +154,7 @@ function runCasper(file) {
 function exec() {
     getFileList(options['in-dir']).on('file', file => {
         // Remove failed dir if any
-        rmdir(path.dirname(file) + '/failed').then(() => {
+        rmdir(path.dirname(file) + 'screenshots/failed').then(() => {
             // Run casper now
             runCasper(file);
         }).catch(exit); // jshint ignore:line

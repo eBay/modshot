@@ -37,6 +37,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask('livesnap', function() {
         var shelljs = require('shelljs');
-        shelljs.exec('node src/snapshot -i ~/corp/git/skinv2/skin/test/');
+        shelljs.exec('node src/snapshot -i test');
     });
 };
