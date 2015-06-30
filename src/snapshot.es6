@@ -3,8 +3,11 @@
 var nopt = require('nopt'),
     path = require('path'),
     fs = require('fs'),
+    rimraf = require('rimraf'),
     EventEmitter = require('events').EventEmitter,
-    _ = require('lodash');
+    childSpawn = require("child_process").spawn,
+    _ = require('lodash'),
+    casperjsExe = path.join(__dirname, '..', 'node_modules/casperjs/bin/casperjs');
 
 // Default options
 var options = {
@@ -66,6 +69,7 @@ function parseOptions() {
     return resolved;
 }
 
+// Promise wrapper for fs.stat
 function stat(file) {
     return new Promise((resolve, reject) => {
         fs.stat(file, (err, stats) => {
@@ -77,6 +81,7 @@ function stat(file) {
     });
 }
 
+// Promise wrapper for fs.readdir
 function readdir(dir) {
     return new Promise((resolve, reject) => {
         fs.readdir(dir, (err, files) => {
@@ -84,6 +89,18 @@ function readdir(dir) {
                 return reject(err);
             }
             resolve(files);
+        });
+    });
+}
+
+// Promise wrapper for rimraf
+function rmdir(dir) {
+    return new Promise((resolve, reject) => {
+        rimraf(dir, function(err) {
+            if (err) {
+                return reject(err);
+            }
+            resolve();
         });
     });
 }
@@ -107,7 +124,7 @@ function getFileList(inputDir) {
                         eventEmitter.emit('file', file);
                     }
                 });
-            }).catch(err => exit(err));
+            }).catch(exit); // jshint ignore:line
         };
 
     // call the wrapper
@@ -117,9 +134,31 @@ function getFileList(inputDir) {
     return eventEmitter;
 }
 
+function runCasper(file) {
+    let casperRunner = path.join(__dirname, 'casper-runner.js'),
+        args = ['test', casperRunner, '--file=' + file],
+        casperjs = childSpawn(casperjsExe, args);
+
+    // Log the data output
+    casperjs.stdout.on('data', data => {
+        log(data.toString());
+    });
+
+    // Exit on error
+    casperjs.stderr.on('data', data => {
+        exit(data.toString());
+    });
+}
+
 // Start the main execution
 function exec() {
-    getFileList(options['in-dir']).on('file', file => console.log(file));
+    getFileList(options['in-dir']).on('file', file => {
+        // Remove failed dir if any
+        rmdir(path.dirname(file) + '/failed').then(() => {
+            // Run casper now
+            runCasper(file);
+        }).catch(exit); // jshint ignore:line
+    });
 }
 
 function run() {
