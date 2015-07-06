@@ -10,16 +10,12 @@ var nopt = require('nopt'),
 
 // Default options
 var options = {
-    'quiet': false,
     'in-dir': process.cwd()
 };
 
 // log messages to the console
-function log(message, override) {
-    // only log for non-quiet mode
-    if (!options.quiet || override) {
-        console.log(message);
-    }
+function log(message) {
+    console.log(message);
 }
 
 function man() {
@@ -29,7 +25,6 @@ function man() {
     Options:
     --in-dir | -i       The input directory to recurse and fetch the HTML files. Uses current directory if not specified
     --help | -h         Displays this information
-    --quiet | -q        Keeps the console clear from logging.
     `;
     log(USAGE);
 }
@@ -41,7 +36,7 @@ function isCLI() {
 
 function exit(msg) {
     if (msg) {
-        log(msg, true);
+        log(msg);
     }
     if (isCLI()) {
         return process.exit(0);
@@ -51,12 +46,10 @@ function exit(msg) {
 function parseOptions() {
     let knownOpts = {
             'in-dir': path,
-            'quiet': Boolean,
             'help': Boolean
         },
         shortHands = {
             'i': ['--in-dir'],
-            'q': ['--quiet'],
             'h': ['--help']
         },
         resolved = _.assign(options, nopt(knownOpts, shortHands));

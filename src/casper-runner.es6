@@ -24,16 +24,13 @@ function initOptions() {
 }
 
 // log messages to the console
-function log(message, override) {
-    // only log for non-quiet mode
-    if (!options.quiet || override) {
-        console.log(message);
-    }
+function log(message) {
+    console.log(message);
 }
 
 function exit(msg) {
     if (msg) {
-        log(msg, true);
+        log(msg);
     }
     return casper.exit(0);
 }
