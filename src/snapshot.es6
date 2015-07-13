@@ -10,7 +10,8 @@ var nopt = require('nopt'),
 
 // Default options
 var options = {
-    'in-dir': process.cwd()
+    'in-dir': process.cwd(),
+    'exclude': ['node_modules']
 };
 
 // log messages to the console
@@ -24,6 +25,8 @@ function man() {
 
     Options:
     --in-dir | -i       The input directory to recurse and fetch the HTML files. Uses current directory if not specified
+    --exclude | -e      Paths|files|directories to be excluded. node_modules excluded by default.
+                        A list can be provided -e test -e dist
     --help | -h         Displays this information
     `;
     log(USAGE);
@@ -46,13 +49,19 @@ function exit(msg) {
 function parseOptions() {
     let knownOpts = {
             'in-dir': path,
+            'exclude': Array,
             'help': Boolean
         },
         shortHands = {
             'i': ['--in-dir'],
+            'e': ['--exclude'],
             'h': ['--help']
         },
-        resolved = _.assign(options, nopt(knownOpts, shortHands));
+        resolved = _.merge(options, nopt(knownOpts, shortHands), (a, b) => {
+            if (Array.isArray(a)) {
+                return a.concat(b);
+            }
+        });
 
     if (resolved.help) {
         man();
@@ -85,15 +94,32 @@ function readdir(dir) {
     });
 }
 
-function getFileList(inputDir) {
+function isExcluded(file, excludeList) {
+    if (!file || !excludeList) {
+        return false;
+    }
+    let parts = file.split('/');
+    // Check if any of the file parts is in the exclusion list
+    // Toggle the response as this should return true if present in exclusion
+    return !parts.every(part => excludeList.indexOf(part) === -1);
+}
+
+function getFileList(inputDir, excludeList) {
     let eventEmitter = new EventEmitter(),
         readdirWrapper = dir => {
             readdir(dir).then(list => {
-                return Promise.all(list.map(item => path.join(dir, item)).map(item => {
-                    return stat(item).then(stats =>  _.assign(stats, {
-                        origFile: item
+                return Promise.all(
+                    // map the file list to a full valid apath
+                    list.map(item => path.join(dir, item))
+                    // Filter out the excludes
+                    .filter(item => !isExcluded(item, excludeList))
+                    // Map each file item to a stat promise
+                    .map(item => {
+                        // Return a promise
+                        return stat(item).then(stats =>  _.assign(stats, {
+                            origFile: item
+                        }));
                     }));
-                }));
             }).then(statsList => {
                 statsList.forEach((stats) => {
                     let file = stats.origFile;
@@ -132,7 +158,7 @@ function runCasper(file) {
 
 // Start the main execution
 function exec() {
-    getFileList(options['in-dir']).on('file', file => {
+    getFileList(options['in-dir'], options.exclude).on('file', file => {
         // Run casper now
         runCasper(file);
     });
