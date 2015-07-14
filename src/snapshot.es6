@@ -95,13 +95,19 @@ function readdir(dir) {
 }
 
 function isExcluded(file, excludeList) {
-    if (!file || !excludeList) {
+    if (!file || !excludeList || !excludeList.length) {
         return false;
     }
-    let parts = file.split('/');
-    // Check if any of the file parts is in the exclusion list
     // Toggle the response as this should return true if present in exclusion
-    return !parts.every(part => excludeList.indexOf(part) === -1);
+    return !excludeList
+        // Map each item in the excludeList to a RegExp pattern
+        .map(exclude => {
+            // Strip '/' before and after
+            exclude = exclude.replace(/^\/|\/$/g, '');
+            return new RegExp(`^${exclude}$|\/${exclude}$|^${exclude}\/|\/${exclude}\/`, 'i');
+        })
+        // Test the pattern with the file path and return immediately if passed
+        .every(pattern => !pattern.test(file));
 }
 
 function getFileList(inputDir, excludeList) {
