@@ -7,11 +7,13 @@ var require = patchRequire(require), // jshint ignore:line
     path = require('path'),
     phantomcssPath = fs.absolute(fs.workingDirectory) + '/node_modules/phantomcss',
     phantomcss = require(phantomcssPath + '/phantomcss'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    screenshotDir = '/screenshots',
+    failedDir = screenshotDir + '/failed',
+    resultsDir = screenshotDir + '/results';
 
 // Default options
 var options = {
-    'quiet': false,
     'file': null
 };
 
@@ -36,8 +38,8 @@ function exit(msg) {
 }
 
 function initPhantomCSS(dirPath) {
-    let screenshotRoot = dirPath + '/screenshots',
-        failedComparisonsRoot = screenshotRoot + '/failed';
+    let screenshotRoot = dirPath + screenshotDir,
+        failedComparisonsRoot = dirPath + failedDir;
 
     // Remove failed directory if any
     fs.removeTree(failedComparisonsRoot);
@@ -46,6 +48,7 @@ function initPhantomCSS(dirPath) {
     phantomcss.init({
         casper: casper,
         cleanupComparisonImages: true,
+        comparisonResultRoot: dirPath + resultsDir,
         libraryRoot: phantomcssPath,
         screenshotRoot: screenshotRoot,
         failedComparisonsRoot: failedComparisonsRoot,
@@ -71,9 +74,10 @@ function run() {
         exit('Please provide a html file path to continue');
         return;
     }
+    let fileDir = path.dirname(file);
 
     // Initialize PhantomCSS
-    initPhantomCSS(path.dirname(file));
+    initPhantomCSS(fileDir);
 
     casper.test.begin('Visual testing - ' + options.file, test => {
         casper.start(file);
@@ -89,6 +93,9 @@ function run() {
 
         // Run & wrap up the test
         casper.run(() => {
+            // Clean up the results dir
+            fs.removeTree(fileDir + resultsDir);
+
             log('Finished visual testing for - ' + file);
             test.done();
             // Calling exit to prevent unsafe JavaScript error https://github.com/n1k0/casperjs/issues/1068
