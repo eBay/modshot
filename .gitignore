@@ -29,3 +29,4 @@ node_modules
 # ignore js files inside src & test
 src/**/*.js
 test/**/*.js
+bin/**/*.js
