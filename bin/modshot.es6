@@ -16,7 +16,7 @@ function exit(msg) {
 
 function man() {
     const USAGE = `
-    USAGE snapshot [options]*
+    USAGE modshot [options]*
 
     Options:
     --in-dir | -i       The input directory to recurse and fetch the HTML files. Uses current directory if not specified
@@ -59,8 +59,8 @@ function parseOptions() {
 function exec() {
     var options = parseOptions();
     if (options) {
-        // run snap
-        require('src/snapshot').run(parseOptions());
+        // run modshot
+        require('src/modshot').run(options);
     }
 }
 

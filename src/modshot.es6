@@ -107,7 +107,7 @@ function runCasper(file) {
     });
 }
 
-// Run snapjs with the provided options
+// Run modshot with the provided options
 function run(opts) {
     if (!opts['in-dir']) {
         log('Please provide an input directory');
