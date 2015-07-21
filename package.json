@@ -1,14 +1,14 @@
 {
-  "name": "snapshot",
+  "name": "modshot",
   "version": "0.0.1",
-  "description": "AJAX utility for consuming chunked JSON responses",
-  "main": "./lib/snapshot.js",
+  "description": "Takes screenshot of UI modules and compare with baselines using PhatomCSS ",
+  "main": "./lib/modshot.js",
   "scripts": {
     "test": "grunt test"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:eBay/snapshot.git"
+    "url": "git@github.com:eBay/modshot.git"
   },
   "author": "Senthil Padmanabhan <https://twitter.com/senthil_hi>",
   "license": "MIT",

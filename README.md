@@ -1,2 +1,2 @@
-# snapshot
-Takes snapshots of UI modules and compares with baseline using PhatomCSS
+# modshot
+Takes screenshots of UI modules and compares with baseline using PhatomCSS

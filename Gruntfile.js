@@ -34,7 +34,7 @@ module.exports = function(grunt) {
 
         watch: {
             files: ['!**/node_modules/**', '**/*.es6'],
-            tasks: ['build', 'livesnap']
+            tasks: ['build', 'liveshot']
         }
     });
 
@@ -42,8 +42,8 @@ module.exports = function(grunt) {
 
     grunt.registerTask('build', ['babel']);
 
-    grunt.registerTask('livesnap', function() {
+    grunt.registerTask('liveshot', function() {
         var shelljs = require('shelljs');
-        shelljs.exec('node src/snapshot -i test');
+        shelljs.exec('node bin/modshot -i test');
     });
 };
