@@ -6,6 +6,11 @@ var nopt = require('nopt'),
     path = require('path'),
     _ = require('lodash');
 
+// log messages to the console
+function log(message) {
+    console.log(message);
+}
+
 function exit(msg) {
     if (msg) {
         log(msg);
@@ -60,7 +65,7 @@ function exec() {
     var options = parseOptions();
     if (options) {
         // run modshot
-        require('src/modshot').run(options);
+        require('../src/modshot').run(options);
     }
 }
 
