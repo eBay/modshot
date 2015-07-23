@@ -3,27 +3,18 @@
 /* globals patchRequire,casper */
 
 var require = patchRequire(require), // jshint ignore:line
+    _ = require('lodash'),
     fs = require('fs'),
     path = require('path'),
-    phantomcssPath = fs.absolute(fs.workingDirectory) + '/node_modules/phantomcss',
+    options = _.assign({ // Merge default options and cli options
+        'file': null,
+        'dirname': path.join(fs.workingDirectory, 'node_modules')
+    }, casper.cli.options),
+    phantomcssPath = path.join(options.dirname, '..', '/node_modules/phantomcss'),
     phantomcss = require(phantomcssPath + '/phantomcss'),
-    _ = require('lodash'),
     screenshotDir = '/screenshots',
     failedDir = screenshotDir + '/failed',
     resultsDir = screenshotDir + '/results';
-
-// Default options
-var options = {
-    'file': null
-};
-
-function parseOptions() {
-    return _.assign(options, casper.cli.options);
-}
-
-function initOptions() {
-    options = parseOptions();
-}
 
 // log messages to the console
 function log(message) {
@@ -66,8 +57,6 @@ function compareScreenshot() {
 }
 
 function run() {
-    // Init options first
-    initOptions();
 
     let file = options.file;
     if (!file) {

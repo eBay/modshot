@@ -93,7 +93,7 @@ function getFileList(inputDir, excludeList) {
 
 function runCasper(file) {
     let casperRunner = path.join(__dirname, 'casper-runner.js'),
-        args = ['test', casperRunner, '--file=' + file],
+        args = ['test', casperRunner, '--file=' + file, '--dirname=' + __dirname],
         casperjs = childSpawn(casperjsExe, args);
 
     // Log the data output
