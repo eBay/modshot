@@ -6,10 +6,15 @@ var require = patchRequire(require), // jshint ignore:line
     _ = require('lodash'),
     fs = require('fs'),
     path = require('path'),
-    options = _.assign({ // Merge default options and cli options
+    options = _.merge({ // Merge default options and cli options
         'file': null,
+        'selectors': null,
         'dirname': path.join(fs.workingDirectory, 'node_modules')
-    }, casper.cli.options),
+    }, casper.cli.options, (a, b) => {
+        if (b === 'undefined') {
+            return null;
+        }
+    }),
     phantomcssPath = path.join(options.dirname, '..', '/node_modules/phantomcss'),
     phantomcss = require(phantomcssPath + '/phantomcss'),
     screenshotDir = '/screenshots',
@@ -48,8 +53,38 @@ function initPhantomCSS(dirPath) {
     });
 }
 
-function takeScreenshot(screenshotName) {
+function takeFullScreenshot(screenshotName) {
     phantomcss.screenshot('*', screenshotName);
+}
+
+function getClassNamesToCapture(selector) {
+    let classNames = [],
+        domNodes = Array.prototype.map.call(document.querySelectorAll(selector), node => node);
+
+    // populate the class names
+    domNodes.forEach((element, index) => {
+        let className = selector + '-' + index;
+        element.setAttribute('class', element.getAttribute('class') + ' ' + className);
+        classNames.push(className);
+    });
+
+    return classNames;
+}
+
+function takeSelectorScreenshot(screenshotName, selectors) {
+    // convert the selectors to an array
+    selectors = selectors.split(',');
+
+    let classNames = [];
+    selectors.forEach(selector => {
+        classNames.concat(this.evaluate(getClassNamesToCapture, selector));
+    });
+
+    console.log('--###---' + classNames);
+    // Take screenshot for all the class names
+    classNames.forEach((className, index) => {
+        phantomcss.screenshot(className, screenshotName + '-' + index);
+    });
 }
 
 function compareScreenshot() {
@@ -75,7 +110,12 @@ function run() {
         casper.viewport(1024, 768);
 
         // Take screenshot
-        casper.then(takeScreenshot.bind(undefined, path.basename(file, '.html')));
+        let screenshotName = path.basename(file, '.html');
+        if (options.selectors) {
+            casper.then(takeSelectorScreenshot.bind(casper, screenshotName, options.selectors));
+        } else {
+            casper.then(takeFullScreenshot.bind(undefined, screenshotName));
+        }
 
         // Compare screenshot
         casper.then(compareScreenshot);

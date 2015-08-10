@@ -91,10 +91,13 @@ function getFileList(inputDir, excludeList) {
     return eventEmitter;
 }
 
-function runCasper(file) {
+function runCasper(file, selectors) {
     let casperRunner = path.join(__dirname, 'casper-runner.js'),
-        args = ['test', casperRunner, '--file=' + file, '--dirname=' + __dirname],
-        casperjs = childSpawn(casperjsExe, args);
+        args = ['test', casperRunner,
+                '--file=' + file,
+                '--dirname=' + __dirname,
+                '--selectors=' + selectors],
+        casperjs = childSpawn(casperjsExe, args); // Start casper JS with arguments
 
     // Log the data output
     casperjs.stdout.on('data', data => {
@@ -115,7 +118,7 @@ function run(opts) {
     }
     getFileList(opts['in-dir'], opts.exclude).on('file', file => {
         // Run casper now
-        runCasper(file);
+        runCasper(file, opts.selectors);
     });
 }
 

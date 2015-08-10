@@ -25,6 +25,7 @@ function man() {
 
     Options:
     --in-dir | -i       The input directory to recurse and fetch the HTML files. Uses current directory if not specified
+    --selectors | -s    A list of selectors to be applied on the HTML files
     --exclude | -e      Paths|files|directories to be excluded. node_modules excluded by default.
                         A list can be provided -e test -e dist
     --help | -h         Displays this information
@@ -40,11 +41,13 @@ function parseOptions() {
 
     let knownOpts = {
             'in-dir': path,
+            'selectors': Array,
             'exclude': Array,
             'help': Boolean
         },
         shortHands = {
             'i': ['--in-dir'],
+            's': ['--selectors'],
             'e': ['--exclude'],
             'h': ['--help']
         },
