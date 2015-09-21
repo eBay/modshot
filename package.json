@@ -8,25 +8,24 @@
   },
   "author": "Senthil Padmanabhan <https://twitter.com/senthil_hi>",
   "license": "MIT",
-  "homepage":"https://github.com/eBay/modshot/blob/master/README.md",
-  "keywords":[
+  "homepage": "https://github.com/eBay/modshot/blob/master/README.md",
+  "keywords": [
     "screenshots",
     "screenshot test",
     "module screenshots"
   ],
   "main": "./lib/modshot.js",
-  "bin":{
-    "modshot":"./bin/modshot.js"
-  },  
+  "bin": {
+    "modshot": "./bin/modshot.js"
+  },
   "scripts": {
     "test": "grunt test",
     "compile": "grunt build",
-    "prepublish": "npm run compile"    
-  },    
+    "prepublish": "npm run compile"
+  },
   "dependencies": {
     "casperjs": "~1.1.0-beta3",
     "phantomcss": "~0.10.1",
-    "shelljs": "~0.5.1",
     "nopt": "~3.0.3",
     "lodash": "~3.9.3",
     "babel-runtime": "~5.6.7",
@@ -34,10 +33,13 @@
     "util": "~0.10.3"
   },
   "devDependencies": {
+    "chai": "^3.3.0",
     "grunt": "~0.4.5",
-    "load-grunt-tasks": "~3.2.0",
+    "grunt-babel": "~5.0.1",
     "grunt-contrib-watch": "~0.6.1",
-    "grunt-babel": "~5.0.1"
+    "grunt-mocha-test": "^0.12.7",
+    "load-grunt-tasks": "~3.2.0",
+    "mocha": "^2.3.3"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
