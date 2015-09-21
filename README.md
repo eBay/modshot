@@ -1,2 +1,2 @@
 # modshot
-Takes screenshots of UI modules and compares with baseline using PhatomCSS
+Takes screenshots of UI modules and compares with baseline using PhantomCSS
