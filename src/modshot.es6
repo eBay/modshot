@@ -74,7 +74,7 @@ function getFileList(inputDir, excludeList) {
                     }
                 });
             }).catch(err => { // jshint ignore:line
-                console.error('### The below error occured when reading the input directory ###');
+                console.error('The below error occured when reading the input directory');
                 console.error(err);
             });
         };
