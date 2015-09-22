@@ -6,14 +6,9 @@ var nopt = require('nopt'),
     path = require('path'),
     _ = require('lodash');
 
-// log messages to the console
-function log(message) {
-    console.log(message);
-}
-
 function exit(msg) {
     if (msg) {
-        log(msg);
+        console.log(msg);
     }
 
     return process.exit(0);
@@ -30,7 +25,7 @@ function man() {
                         A list can be provided -e test -e dist
     --help | -h         Displays this information
     `;
-    log(USAGE);
+    console.log(USAGE);
 }
 
 function parseOptions() {

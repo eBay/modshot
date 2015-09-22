@@ -7,16 +7,6 @@ var path = require('path'),
     _ = require('lodash'),
     casperjsExe = path.join(__dirname, '..', 'node_modules/casperjs/bin/casperjs');
 
-// log error messages to the console
-function logError(message) {
-    console.error(message);
-}
-
-// log messages to the console
-function log(message) {
-    console.log(message);
-}
-
 // Promise wrapper for fs.stat
 function stat(file) {
     return new Promise((resolve, reject) => {
@@ -84,8 +74,8 @@ function getFileList(inputDir, excludeList) {
                     }
                 });
             }).catch(err => { // jshint ignore:line
-                logError('### The below error occured when reading the input directory ###');
-                logError(err);
+                console.error('### The below error occured when reading the input directory ###');
+                console.error(err);
             });
         };
 
@@ -106,19 +96,19 @@ function runCasper(file, selectors) {
 
     // Log the data output
     casperjs.stdout.on('data', data => {
-        log(data.toString());
+        console.log(data.toString());
     });
 
     // Log the error
     casperjs.stderr.on('data', data => {
-        log(data.toString());
+        console.error(data.toString());
     });
 }
 
 // Run modshot with the provided options
 function run(opts) {
     if (!opts['in-dir']) {
-        logError('Please provide an input directory');
+        console.error('Please provide an input directory');
         return;
     }
     getFileList(opts['in-dir'], opts.exclude).on('file', file => {

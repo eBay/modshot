@@ -21,22 +21,12 @@ var require = patchRequire(require), // jshint ignore:line
     failedDir = screenshotDir + '/failed',
     resultsDir = screenshotDir + '/results';
 
-// log error messages to the console
-function logError(message) {
-    console.error(message);
-}
-
-// log messages to the console
-function log(message) {
-    console.log(message);
-}
-
 function exit(msg, code = 0) {
     if (msg) {
         if (code === 0) {
-            log(msg);
+            console.log(msg);
         } else {
-            logError(msg);
+            console.error(msg);
         }
     }
     return casper.exit(code);
@@ -133,7 +123,7 @@ function run() {
             // Clean up the results dir
             fs.removeTree(fileDir + resultsDir);
 
-            log('Finished visual testing for - ' + file);
+            console.log('Finished visual testing for - ' + file);
             test.done();
             // Calling exit to prevent unsafe JavaScript error https://github.com/n1k0/casperjs/issues/1068
             casper.exit();
