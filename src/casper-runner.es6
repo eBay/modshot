@@ -21,16 +21,25 @@ var require = patchRequire(require), // jshint ignore:line
     failedDir = screenshotDir + '/failed',
     resultsDir = screenshotDir + '/results';
 
+// log error messages to the console
+function logError(message) {
+    console.error(message);
+}
+
 // log messages to the console
 function log(message) {
     console.log(message);
 }
 
-function exit(msg) {
+function exit(msg, code = 0) {
     if (msg) {
-        log(msg);
+        if (code === 0) {
+            log(msg);
+        } else {
+            logError(msg);
+        }
     }
-    return casper.exit(0);
+    return casper.exit(code);
 }
 
 function initPhantomCSS(dirPath) {
@@ -91,7 +100,7 @@ function run() {
 
     let file = options.file;
     if (!file) {
-        exit('Please provide a html file path to continue');
+        exit('Please provide a html file path to continue', 1);
         return;
     }
     let fileDir = path.dirname(file);
