@@ -109,12 +109,14 @@ function runCasper(file, selectors) {
 function run(opts) {
     if (!opts['in-dir']) {
         console.error('Please provide an input directory');
-        return;
+        return 1;
     }
     getFileList(opts['in-dir'], opts.exclude).on('file', file => {
         // Run casper now
         runCasper(file, opts.selectors);
     });
+
+    return 0;
 }
 
 // Export the run method

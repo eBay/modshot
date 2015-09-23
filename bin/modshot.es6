@@ -2,17 +2,10 @@
 
 'use strict';
 
-var nopt = require('nopt'),
+var exitCode = 0,
+    nopt = require('nopt'),
     path = require('path'),
     _ = require('lodash');
-
-function exit(msg) {
-    if (msg) {
-        console.log(msg);
-    }
-
-    return process.exit(0);
-}
 
 function man() {
     const USAGE = `
@@ -30,11 +23,10 @@ function man() {
 
 function parseOptions() {
     const DEFAULT_OPTIONS = {
-        'in-dir': process.cwd(),
-        'exclude': ['node_modules']
-    };
-
-    let knownOpts = {
+            'in-dir': process.cwd(),
+            'exclude': ['node_modules']
+        },
+        knownOpts = {
             'in-dir': path,
             'selectors': Array,
             'exclude': Array,
@@ -46,7 +38,7 @@ function parseOptions() {
             'e': ['--exclude'],
             'h': ['--help']
         },
-        resolved = _.merge(DEFAULT_OPTIONS, nopt(knownOpts, shortHands), (a, b) => {
+        resolved = _.merge({}, DEFAULT_OPTIONS, nopt(knownOpts, shortHands), (a, b) => {
             if (Array.isArray(a)) {
                 return a.concat(b);
             }
@@ -54,18 +46,22 @@ function parseOptions() {
 
     if (resolved.help) {
         man();
-        return exit();
+        return null;
     }
     return resolved;
 }
 
 function exec() {
-    var options = parseOptions();
+    const options = parseOptions();
     if (options) {
         // run modshot
-        require('../src/modshot').run(options);
+        exitCode = require('../src/modshot').run(options);
     }
 }
+
+process.on("exit", function() {
+    process.exit(exitCode);
+});
 
 // Start the executiom
 exec();
