@@ -1,6 +1,6 @@
 {
   "name": "modshot",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Takes screenshot of UI modules and compare with baselines using PhatomCSS ",
   "repository": {
     "type": "git",

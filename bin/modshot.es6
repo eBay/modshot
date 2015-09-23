@@ -2,10 +2,13 @@
 
 'use strict';
 
-var exitCode = 0,
-    nopt = require('nopt'),
+var nopt = require('nopt'),
     path = require('path'),
     _ = require('lodash');
+
+function exit(code) {
+    return process.exit(code);
+}
 
 function man() {
     const USAGE = `
@@ -46,22 +49,22 @@ function parseOptions() {
 
     if (resolved.help) {
         man();
-        return null;
+        return exit(0);
     }
     return resolved;
 }
 
 function exec() {
+    let exitCode = 0;
     const options = parseOptions();
     if (options) {
         // run modshot
         exitCode = require('../src/modshot').run(options);
     }
+    if (exitCode) {
+        exit(exitCode);
+    }
 }
-
-process.on("exit", function() {
-    process.exit(exitCode);
-});
 
 // Start the executiom
 exec();
