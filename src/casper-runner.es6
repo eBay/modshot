@@ -9,14 +9,14 @@ var require = patchRequire(require), // jshint ignore:line
     options = _.merge({ // Merge default options and cli options
         'file': null,
         'selectors': null,
-        'dirname': path.join(fs.workingDirectory, 'node_modules')
+        'phantomcssPath': null
     }, casper.cli.options, (a, b) => {
         if (b === 'undefined') {
             return null;
         }
     }),
-    phantomcssPath = path.join(options.dirname, '..', '/node_modules/phantomcss'),
-    phantomcss = require(phantomcssPath + '/phantomcss'),
+    phantomcssPath = options.phantomcssPath,
+    phantomcss = phantomcssPath ? require(path.join(phantomcssPath, 'phantomcss')) : null,
     screenshotDir = '/screenshots',
     failedDir = screenshotDir + '/failed',
     resultsDir = screenshotDir + '/results';
@@ -87,6 +87,12 @@ function compareScreenshot() {
 }
 
 function run() {
+
+    // Check if phantomcss is present
+    if (!phantomcss) {
+        exit('PhantomCSS not found', 1);
+        return;
+    }
 
     let file = options.file;
     if (!file) {

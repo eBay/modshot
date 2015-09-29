@@ -5,7 +5,8 @@ var path = require('path'),
     EventEmitter = require('events').EventEmitter,
     childSpawn = require("child_process").spawn,
     _ = require('lodash'),
-    casperjsExePath = 'casperjs/bin/casperjs';
+    casperjsExePath = 'casperjs/bin/casperjs',
+    phantomcssModuleName = 'phantomcss';
 
 // Promise wrapper for fs.stat
 function stat(file) {
@@ -117,15 +118,25 @@ function runCasper(file, selectors) {
     let casperRunner = path.join(__dirname, 'casper-runner.js'),
         args = ['test', casperRunner,
                 '--file=' + file,
-                '--dirname=' + __dirname,
                 '--selectors=' + selectors];
 
     try {
         let casperjsExe = lookup(casperjsExePath, true);
+        // Check if casperjs executable is present
         if (!casperjsExe) {
-            console.error('casperjs executable not');
+            console.error('casperjs executable not found');
             return;
         }
+
+        // Check if phantomCSS module is present executable is present
+        let phantomcssPath = lookup(phantomcssModuleName);
+        if (!phantomcssPath) {
+            console.error('phantomcss not found');
+            return;
+        }
+
+        // Add phantomcssPath to the args
+        args.push('--phantomcssPath=' + phantomcssPath);
 
         let casperjs = childSpawn(casperjsExe, args); // Start casper JS with arguments
         // Log the data output
