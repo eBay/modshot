@@ -5,7 +5,7 @@ var path = require('path'),
     EventEmitter = require('events').EventEmitter,
     childSpawn = require("child_process").spawn,
     _ = require('lodash'),
-    casperjsExe = path.join(__dirname, '..', 'node_modules/casperjs/bin/casperjs');
+    casperjsExePath = 'casperjs/bin/casperjs';
 
 // Promise wrapper for fs.stat
 function stat(file) {
@@ -17,6 +17,33 @@ function stat(file) {
             resolve(stats);
         });
     });
+}
+
+function lookup(filePath, isExecutable) {
+    let fullFilePath;
+    module.paths.some(modulePath => {
+        let absPath = path.join(modulePath, filePath);
+
+        if (isExecutable && process.platform === 'win32') {
+            absPath += '.cmd';
+        }
+        try {
+            let stat = fs.statSync(absPath);
+            if (isExecutable) {
+                if (stat.isFile()) {
+                    fullFilePath = absPath;
+                    return true;
+                }
+            } else {
+                fullFilePath = absPath;
+                return true;
+            }
+        } catch (ex) {
+            // Do nothing if path doesnt exist
+        }
+        return false;
+    });
+    return fullFilePath;
 }
 
 // Promise wrapper for fs.readdir
@@ -91,18 +118,29 @@ function runCasper(file, selectors) {
         args = ['test', casperRunner,
                 '--file=' + file,
                 '--dirname=' + __dirname,
-                '--selectors=' + selectors],
-        casperjs = childSpawn(casperjsExe, args); // Start casper JS with arguments
+                '--selectors=' + selectors];
 
-    // Log the data output
-    casperjs.stdout.on('data', data => {
-        console.log(data.toString());
-    });
+    try {
+        let casperjsExe = lookup(casperjsExePath, true);
+        if (!casperjsExe) {
+            console.error('casperjs executable not');
+            return;
+        }
 
-    // Log the error
-    casperjs.stderr.on('data', data => {
-        console.error(data.toString());
-    });
+        let casperjs = childSpawn(casperjsExe, args); // Start casper JS with arguments
+        // Log the data output
+        casperjs.stdout.on('data', data => {
+            console.log(data.toString());
+        });
+
+        // Log the error
+        casperjs.stderr.on('data', data => {
+            console.error(data.toString());
+        });
+    } catch (ex) {
+        console.error('The below error occured when executing casperjs');
+        console.error(ex);
+    }
 }
 
 // Run modshot with the provided options
