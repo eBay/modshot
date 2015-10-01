@@ -1,6 +1,10 @@
 'use strict';
 
-/* globals patchRequire,casper */
+/* globals patchRequire,casper,phantom */
+
+// override the phantom.casperScriptBaseDir temporarily
+const origCasperScriptBaseDir = phantom.casperScriptBaseDir;
+phantom.casperScriptBaseDir = origCasperScriptBaseDir + '/..';
 
 var require = patchRequire(require), // jshint ignore:line
     _ = require('lodash'),
@@ -20,6 +24,9 @@ var require = patchRequire(require), // jshint ignore:line
     screenshotDir = '/screenshots',
     failedDir = screenshotDir + '/failed',
     resultsDir = screenshotDir + '/results';
+
+// Reset phantom.casperScriptBaseDir
+phantom.casperScriptBaseDir = origCasperScriptBaseDir;
 
 function exit(msg, code = 0) {
     if (msg) {
