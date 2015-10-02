@@ -23,6 +23,33 @@ describe('CLI validation', () => {
         });
     });
 
+    it('should exit with no-op when no HTML files are found in the input directory', done => {
+
+        exec('node bin/modshot -i src', (error, stdout, stderr) => {
+            assert.include(stderr, '');
+            assert.include(stdout, '');
+            done();
+        });
+    });
+
+    it('should exit with no-op when node_modules is provided as an input directory', done => {
+
+        exec('node bin/modshot -i node_modules', (error, stdout, stderr) => {
+            assert.include(stderr, '');
+            assert.include(stdout, '');
+            done();
+        });
+    });
+
+    it('should not process directories that are included in the exclude -e option', done => {
+
+        exec('node bin/modshot -i test -e test', (error, stdout, stderr) => {
+            assert.include(stderr, '');
+            assert.include(stdout, '');
+            done();
+        });
+    });
+
     it('should generate screenshots for HTML files in fixtures with no options', done => {
 
         exec('node bin/modshot', (error, stdout) => {
@@ -46,4 +73,5 @@ describe('CLI validation', () => {
             });
         });
     });
+
 });
