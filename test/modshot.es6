@@ -6,6 +6,7 @@ var exec = require('child_process').exec,
     glob = require('glob');
 
 describe('CLI validation', () => {
+
     it('should print USAGE text if --h option is used', done => {
 
         exec('node bin/modshot -h', (error, stdout) => {
@@ -74,4 +75,27 @@ describe('CLI validation', () => {
         });
     });
 
+    it('should generate screenshots for HTML files only for selector region provided with -s option', done => {
+
+        exec('node bin/modshot -i test -s .box', (error, stdout) => {
+            assert.include(stdout, 'PASS', 'Output message should have the string PASS');
+            glob('test/fixtures/box/**/*.png', function(er, files) {
+                assert.isNull(er, 'Error should be null when retrieving screenshot png files');
+                assert.isTrue(files.length >= 3);
+                done();
+            });
+        });
+    });
+
+    it('should generate screenshots for HTML files only for selector regions with multiple -s option', done => {
+
+        exec('node bin/modshot -i test -s .box -s test1', (error, stdout) => {
+            assert.include(stdout, 'PASS', 'Output message should have the string PASS');
+            glob('test/fixtures/**/*.png', function(er, files) {
+                assert.isNull(er, 'Error should be null when retrieving screenshot png files');
+                assert.isTrue(files.length >= 5);
+                done();
+            });
+        });
+    });
 });
