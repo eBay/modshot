@@ -55,7 +55,7 @@ function initPhantomCSS(dirPath) {
         screenshotRoot: screenshotRoot,
         failedComparisonsRoot: failedComparisonsRoot,
         addLabelToFailedImage: false,
-        mismatchTolerance: 1
+        mismatchTolerance: 0.95
     });
 }
 
