@@ -19,9 +19,7 @@
     "modshot": "./bin/modshot.js"
   },
   "scripts": {
-    "test": "grunt test",
-    "compile": "grunt build",
-    "prepublish": "npm run compile"
+    "test": "grunt test"
   },
   "dependencies": {
     "casperjs": "~1.1.0-beta3",
