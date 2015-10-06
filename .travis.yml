@@ -4,7 +4,7 @@ node_js:
     - "0.12"
     - "4"
 env:
-    - MISMATCH_TOLERANC=20
+    - MISMATCH_TOLERANC=50
 before_script:
     - npm install grunt-cli -g
 script: "npm test"
