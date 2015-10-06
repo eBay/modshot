@@ -114,11 +114,12 @@ function getFileList(inputDir, excludeList) {
     return eventEmitter;
 }
 
-function runCasper(file, selectors) {
+function runCasper(file, selectors, tolerance) {
     let casperRunner = path.join(__dirname, 'casper-runner.js'),
         args = ['test', casperRunner,
                 '--file=' + file,
-                '--selectors=' + selectors];
+                '--selectors=' + selectors,
+                '--tolerance=' + tolerance];
 
     try {
         let casperjsExe = lookup(casperjsExePath, true);
@@ -140,14 +141,10 @@ function runCasper(file, selectors) {
 
         let casperjs = childSpawn(casperjsExe, args); // Start casper JS with arguments
         // Log the data output
-        casperjs.stdout.on('data', data => {
-            console.log(data.toString());
-        });
+        casperjs.stdout.on('data', data => console.log(data.toString()));
 
         // Log the error
-        casperjs.stderr.on('data', data => {
-            console.error(data.toString());
-        });
+        casperjs.stderr.on('data', data => console.error(data.toString()));
     } catch (ex) {
         console.error('The below error occured when executing casperjs');
         console.error(ex);
@@ -162,7 +159,7 @@ function run(opts) {
     }
     getFileList(opts['in-dir'], opts.exclude).on('file', file => {
         // Run casper now
-        runCasper(file, opts.selectors);
+        runCasper(file, opts.selectors, opts.tolerance);
     });
 
     return 0;

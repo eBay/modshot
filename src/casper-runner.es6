@@ -13,6 +13,7 @@ var require = patchRequire(require), // jshint ignore:line
     options = _.merge({ // Merge default options and cli options
         'file': null,
         'selectors': null,
+        'tolerance': null,
         'phantomcssPath': null
     }, casper.cli.options, (a, b) => {
         if (b === 'undefined') {
@@ -55,7 +56,7 @@ function initPhantomCSS(dirPath) {
         screenshotRoot: screenshotRoot,
         failedComparisonsRoot: failedComparisonsRoot,
         addLabelToFailedImage: false,
-        mismatchTolerance: 50
+        mismatchTolerance: _.isNumber(options.tolerance) && options.tolerance
     });
 }
 

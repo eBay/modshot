@@ -3,7 +3,9 @@
 
 var exec = require('child_process').exec,
     assert = require('chai').assert,
-    glob = require('glob');
+    glob = require('glob'),
+    tolerance = process.env.MISMATCH_TOLERANC, // jshint ignore:line
+    toleranceOption = ` -t ${tolerance || ''} `;
 
 describe('CLI validation', () => {
 
@@ -53,7 +55,7 @@ describe('CLI validation', () => {
 
     it('should generate screenshots for HTML files in fixtures with no options', done => {
 
-        exec('node bin/modshot', (error, stdout) => {
+        exec('node bin/modshot' + toleranceOption, (error, stdout) => {
             assert.include(stdout, 'PASS', 'Output message should have the string PASS');
             glob('test/fixtures/**/*.png', function(er, files) {
                 assert.isNull(er, 'Error should be null when retrieving screenshot png files');
@@ -65,7 +67,7 @@ describe('CLI validation', () => {
 
     it('should generate screenshots for HTML files in fixtures with -i option as test', done => {
 
-        exec('node bin/modshot -i test', (error, stdout) => {
+        exec('node bin/modshot -i test' + toleranceOption, (error, stdout) => {
             assert.include(stdout, 'PASS', 'Output message should have the string PASS');
             glob('test/fixtures/**/*.png', function(er, files) {
                 assert.isNull(er, 'Error should be null when retrieving screenshot png files');
@@ -77,7 +79,7 @@ describe('CLI validation', () => {
 
     it('should generate screenshots for HTML files only for selector region provided with -s option', done => {
 
-        exec('node bin/modshot -i test -s .box', (error, stdout) => {
+        exec('node bin/modshot -i test -s .box' + toleranceOption, (error, stdout) => {
             assert.include(stdout, 'PASS', 'Output message should have the string PASS');
             glob('test/fixtures/box/**/*.png', function(er, files) {
                 assert.isNull(er, 'Error should be null when retrieving screenshot png files');
@@ -89,7 +91,7 @@ describe('CLI validation', () => {
 
     it('should generate screenshots for HTML files only for selector regions with multiple -s option', done => {
 
-        exec('node bin/modshot -i test -s .box -s test1', (error, stdout) => {
+        exec('node bin/modshot -i test -s .box -s test1' + toleranceOption, (error, stdout) => {
             assert.include(stdout, 'PASS', 'Output message should have the string PASS');
             glob('test/fixtures/**/*.png', function(er, files) {
                 assert.isNull(er, 'Error should be null when retrieving screenshot png files');

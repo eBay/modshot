@@ -3,6 +3,8 @@ node_js:
     - "0.10"
     - "0.12"
     - "4"
+env:
+    - MISMATCH_TOLERANC=20
 before_script:
     - npm install grunt-cli -g
 script: "npm test"

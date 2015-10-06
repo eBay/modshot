@@ -19,6 +19,7 @@ function man() {
     --selectors | -s    A list of selectors to be applied on the HTML files
     --exclude | -e      Paths|files|directories to be excluded. node_modules excluded by default.
                         A list can be provided -e test -e dist
+    --tolerance | -t    Mismatch tolerance percentage. Defaults to  0.05%
     --help | -h         Displays this information
     `;
     console.log(USAGE);
@@ -33,12 +34,14 @@ function parseOptions() {
             'in-dir': path,
             'selectors': Array,
             'exclude': Array,
+            'tolerance': Number,
             'help': Boolean
         },
         shortHands = {
             'i': ['--in-dir'],
             's': ['--selectors'],
             'e': ['--exclude'],
+            't': ['--tolerance'],
             'h': ['--help']
         },
         resolved = _.merge({}, DEFAULT_OPTIONS, nopt(knownOpts, shortHands), (a, b) => {
