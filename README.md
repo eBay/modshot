@@ -22,7 +22,7 @@ Options:
 ```
 Example
 ```
-node bin/modshot -i src/ui-modules -s .box -s .test -e temp
+modshot -i src/ui-modules -s .box -s .test -e temp
 ```
 Running `modshot` with no options, uses the current directory as the input directory
 
