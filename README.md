@@ -6,7 +6,7 @@ modshot scans your project directory looking for `HTML` files. If a file is foun
 ## Usage
 Install modshot
 ```
-$ npm install -g spofcheck
+$ npm install -g modshot
 ```
 To run modshot
 ```
