@@ -4,6 +4,7 @@
 
 var nopt = require('nopt'),
     path = require('path'),
+    url = require('url'),
     _ = require('lodash');
 
 function exit(code) {
@@ -15,8 +16,12 @@ function man() {
     USAGE modshot [options]*
 
     Options:
-    --in-dir | -i       The input directory to recurse and fetch the HTML files. Uses current directory if not specified
-    --selectors | -s    A list of selectors to be applied on the HTML files
+    --in-dir | -i       The input directory to recurse and fetch the HTML files.
+                        Uses current working directory if not specified
+    --url | -u          The web page URL to take screenshots
+    --out-dir | -o      The output directory to save the screenshots.
+                        Uses current working directory if not specified
+    --selectors | -s    A list of selectors to be applied on the HTML files or URL
     --exclude | -e      Paths|files|directories to be excluded. node_modules excluded by default.
                         A list can be provided -e test -e dist
     --tolerance | -t    Mismatch tolerance percentage. Defaults to  0.05%
@@ -27,11 +32,12 @@ function man() {
 
 function parseOptions() {
     const DEFAULT_OPTIONS = {
-            'in-dir': process.cwd(),
             'exclude': ['node_modules']
         },
         knownOpts = {
             'in-dir': path,
+            'out-dir': path,
+            'url': url,
             'selectors': Array,
             'exclude': Array,
             'tolerance': Number,
@@ -39,6 +45,8 @@ function parseOptions() {
         },
         shortHands = {
             'i': ['--in-dir'],
+            'o': ['--out-dir'],
+            'u': ['--url'],
             's': ['--selectors'],
             'e': ['--exclude'],
             't': ['--tolerance'],
@@ -54,6 +62,18 @@ function parseOptions() {
         man();
         return exit(0);
     }
+
+    // Verify if the URL is valid
+    if (!resolved.url && resolved.argv.cooked.indexOf('--url') !== -1) {
+        console.error('Please enter a valid URL with protocol');
+        return exit(1);
+    }
+
+    // Set default value for input directory if both input dir & URL not provided
+    if (!resolved['in-dir'] && !resolved.url) {
+        resolved['in-dir'] = process.cwd();
+    }
+
     return resolved;
 }
 

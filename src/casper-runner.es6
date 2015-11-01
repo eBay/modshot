@@ -10,11 +10,13 @@ var require = patchRequire(require), // jshint ignore:line
     _ = require('lodash'),
     fs = require('fs'),
     path = require('path'),
+    url = require('url'),
     options = _.merge({ // Merge default options and cli options
         'file': null,
         'selectors': null,
         'tolerance': null,
-        'phantomcssPath': null
+        'phantomcssPath': null,
+        'outputDir': null
     }, casper.cli.options, (a, b) => {
         if (b === 'undefined') {
             return null;
@@ -38,6 +40,14 @@ function exit(msg, code = 0) {
         }
     }
     return casper.exit(code);
+}
+
+function getScreenshotName(file) {
+    let screenshotName = url.parse(String(file)).hostname;
+    if (!screenshotName) {
+        screenshotName = path.basename(file, '.html');
+    }
+    return screenshotName;
 }
 
 function initPhantomCSS(dirPath) {
@@ -107,19 +117,19 @@ function run() {
         exit('Please provide a html file path to continue', 1);
         return;
     }
-    let fileDir = path.dirname(file);
+    let dirPath = options.outputDir || path.dirname(file);
 
     // Initialize PhantomCSS
-    initPhantomCSS(fileDir);
+    initPhantomCSS(dirPath);
 
-    casper.test.begin('Visual testing - ' + options.file, test => {
+    casper.test.begin('Visual testing - ' + file, test => {
         casper.start(file);
 
         // Set the viewport
         casper.viewport(1024, 768);
 
         // Take screenshot
-        let screenshotName = path.basename(file, '.html');
+        let screenshotName = getScreenshotName(file);
         if (options.selectors) {
             casper.then(() => {
                 let classNames = casper.evaluate(getClassNamesToCapture, options.selectors);
@@ -135,7 +145,7 @@ function run() {
         // Run & wrap up the test
         casper.run(() => {
             // Clean up the results dir
-            fs.removeTree(fileDir + resultsDir);
+            fs.removeTree(dirPath + resultsDir);
 
             console.log('Finished visual testing for - ' + file);
             test.done();

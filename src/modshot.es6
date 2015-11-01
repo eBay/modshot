@@ -2,6 +2,7 @@
 
 var path = require('path'),
     fs = require('fs'),
+    url = require('url'),
     EventEmitter = require('events').EventEmitter,
     childSpawn = require("child_process").spawn,
     _ = require('lodash'),
@@ -18,6 +19,22 @@ function stat(file) {
             resolve(stats);
         });
     });
+}
+
+function isURLValid(urlStr) {
+    const urlObj = url.parse(String(urlStr));
+    return !!urlObj.host;
+}
+
+function isValidOutputDir(outDir) {
+    try {
+        const stat = fs.statSync(outDir);
+        return stat.isDirectory();
+    } catch (ex) {
+        // Do nothing
+    }
+
+    return false;
 }
 
 function lookup(filePath, isExecutable) {
@@ -114,12 +131,13 @@ function getFileList(inputDir, excludeList) {
     return eventEmitter;
 }
 
-function runCasper(file, selectors, tolerance) {
+function runCasper(file, selectors, tolerance, outDir) {
     let casperRunner = path.join(__dirname, 'casper-runner.js'),
         args = ['test', casperRunner,
                 '--file=' + file,
                 '--selectors=' + selectors,
-                '--tolerance=' + tolerance];
+                '--tolerance=' + tolerance,
+                '--outputDir=' + outDir];
 
     try {
         let casperjsExe = lookup(casperjsExePath, true);
@@ -151,16 +169,52 @@ function runCasper(file, selectors, tolerance) {
     }
 }
 
+function processURL(urlStr, opts) {
+    if (!isURLValid(urlStr)) {
+        console.error('Please enter a valid URL with protocol');
+        return;
+    }
+
+    // Validate output directory
+    const outDir = opts['out-dir'] || process.cwd();
+    if (!isValidOutputDir(outDir)) {
+        console.error('Please provide a valid output directory');
+        return;
+    }
+
+    runCasper(urlStr, opts.selectors, opts.tolerance, outDir);
+}
+
+function processInputDir(inDir, opts) {
+    // Only use output directory if present and no URL input is provided
+    const outDir = !opts.url && opts['out-dir'];
+    if (outDir && !isValidOutputDir(outDir)) {
+        console.error('Please provide a valid output directory');
+        return;
+    }
+
+    getFileList(inDir, opts.exclude).on('file', file => {
+        // Run casper now
+        runCasper(file, opts.selectors, opts.tolerance, outDir);
+    });
+}
+
 // Run modshot with the provided options
 function run(opts) {
-    if (!opts['in-dir']) {
-        console.error('Please provide an input directory');
+    if (!opts['in-dir'] && !opts.url) {
+        console.error('Please provide an input directory or an URL');
         return 1;
     }
-    getFileList(opts['in-dir'], opts.exclude).on('file', file => {
-        // Run casper now
-        runCasper(file, opts.selectors, opts.tolerance);
-    });
+
+    // Process the URL
+    if (opts.url) {
+        processURL(opts.url, opts);
+    }
+
+    // Process the input directory
+    if (opts['in-dir']) {
+        processInputDir(opts['in-dir'], opts);
+    }
 
     return 0;
 }
