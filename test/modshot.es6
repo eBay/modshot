@@ -159,10 +159,27 @@ describe('CLI validation', () => {
             exec('node bin/modshot -u http://pages.ebay.com/sitemap.html -o test/url/selectors/ -s h1 -s h2' +
             toleranceOption, (error, stdout) => {
                 assert.include(stdout, 'PASS', 'Output message should have the string PASS');
-                glob('test/url/full/screenshots/*.png', function(er, files) {
+                glob('test/url/selectors/screenshots/*.png', function(er, files) {
                     assert.isNull(er, 'Error should be null when retrieving screenshot png files from output dir');
                     assert.isAbove(files.length, 0);
                     done();
+                });
+            });
+        });
+
+        it('should generate screenshots when both a URL and input directory are provided', done => {
+
+            exec('node bin/modshot -u http://pages.ebay.com/sitemap.html -o test/url/full/ -i test/' +
+            toleranceOption, (error, stdout) => {
+                assert.include(stdout, 'PASS', 'Output message should have the string PASS');
+                glob('test/url/full/screenshots/*.png', function(er, files) {
+                    assert.isNull(er, 'Error should be null when retrieving screenshot png files from output dir');
+                    assert.equal(files.length, 1);
+                    glob('test/fixtures/**/*.png', function(er, files) {
+                        assert.isNull(er, 'Error should be null when retrieving screenshot png files');
+                        assert.isAbove(files.length, 0);
+                        done();
+                    });
                 });
             });
         });
