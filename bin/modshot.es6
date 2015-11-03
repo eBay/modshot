@@ -20,7 +20,10 @@ function man() {
                         Uses current working directory if not specified
     --url | -u          The web page URL to take screenshots
     --out-dir | -o      The output directory to save the screenshots.
-                        Uses current working directory if not specified
+                        Optional when an input directory is provided,
+                        as screenshots are saved adjacent to the HTML files.
+                        When a URL is provided and output directory is missing,
+                        current working directory is used as output directory
     --selectors | -s    A list of selectors to be applied on the HTML files or URL
     --exclude | -e      Paths|files|directories to be excluded. node_modules excluded by default.
                         A list can be provided -e test -e dist
