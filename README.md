@@ -38,6 +38,10 @@ modshot -i src/ui-modules -s .box -s .test -e temp
 ```
 modshot -u http://pages.ebay.com/sitemap.html -s h1 -s .btn -o screenshots
 ```
+**Example 3:**
+```
+modshot -i src/ui-modules -u http://pages.ebay.com/sitemap.html -o screenshots -t 15
+```
 Running `modshot` with no options, uses the current directory as the input directory and scans for static HTML files.
 
 ##Testing
