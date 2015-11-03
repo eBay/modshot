@@ -15,21 +15,26 @@ $ npm install -g modshot
 ```
 To run modshot
 ```
-modshot [options]*
+USAGE modshot [options]*
 
 Options:
---in-dir | -i       The input directory to recurse and fetch the HTML files. Uses current directory if not specified
---selectors | -s    A list of selectors to be applied on the HTML files
+--in-dir | -i       The input directory to recurse and fetch the HTML files. 
+                    Uses current working directory if not specified
+--url | -u          The web page URL to take screenshots
+--out-dir | -o      The output directory to save the screenshots. 
+                    Optional when an input directory is provided. 
+                    When a URL is provided and output directory is missing, it uses current working directory as output directory
+--selectors | -s    A list of selectors to be applied on the HTML files or URL
 --exclude | -e      Paths|files|directories to be excluded. node_modules excluded by default.
                     A list can be provided -e test -e dist
 --tolerance | -t    Mismatch tolerance percentage. Defaults to  0.05%
 --help | -h         Displays this information
 ```
-Example
+**Example 1:**
 ```
 modshot -i src/ui-modules -s .box -s .test -e temp
 ```
-Running `modshot` with no options, uses the current directory as the input directory
+Running `modshot` with no options, uses the current directory as the input directory and scans for static HTML files.
 
 ##Testing
 The testing suite is available in the [test](https://github.com/eBay/modshot/tree/master/test) directory. To run the tests - clone/fork the [repo](https://github.com/eBay/modshot), 
