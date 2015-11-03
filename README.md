@@ -1,8 +1,13 @@
 # modshot [![Build Status](https://travis-ci.org/eBay/modshot.svg)](https://travis-ci.org/eBay/modshot)
 modshot is a CLI utility that captures screenshots (png image) of UI modules and compares with an existing baseline image. If a baseline is not present, a new baseline is created. It is a warpper on top of [PhantomCSS](https://github.com/Huddle/PhantomCSS), to provide an easy mechanism for visual regression. 
 
-modshot scans your project directory looking for `HTML` files. If a file is found loads it with [PhantomJS](http://phantomjs.org/), takes a screenshot and puts them in a `screenshots` directory adjacent to the HTML file. modshot assumes that you follow a modular UI architecture, where each of the UI component lives in its own directory along with the test files and mock HTML. 
+modshot can operate in two modes
 
+1. **Static HTML** - When provided with an input directory (check [usage](#usage) below), modshot recursively scans the directory looking for `HTML` files. If a file is found loads it with [PhantomJS](http://phantomjs.org/), takes a screenshot and puts them in a `screenshots` directory adjacent to the HTML file. For subsequent runs, these screenshots are used as baselines. modshot assumes that you follow a [modular UI architecture](http://www.ebaytechblog.com/2014/10/02/dont-build-pages-build-modules/), where each of the UI component lives in its own directory along with the test files and mock HTML. 
+2. **URL** - When a URL is provided (check [usage](#usage) below), modshot loads the URL with PhantomJS, takes a screenshot (or multiple screenshots if selectors are provided) and puts them in the provided output directory. For subsequent runs, these screenshots are used as baselines. It is advised to provide CSS selectors of modules as option, so module screenshots are taken instead of the whole page.
+
+If both modes (static HTML & URL) are provided, modshot starts both of them in parallel. If a modshot run fails, but the UI change was intentional, then the developer has to manually delete the baseline. modshot will create a new baseline in the next run.
+ 
 ## Usage
 Install modshot
 ```
@@ -36,7 +41,7 @@ $ npm test
 ##Issues
 Have a bug or a feature request? [Please open a new issue](https://github.com/eBay/modshot/issues)
 
-##Author(s)
+##Author
 [Senthil Padmanabhan](http://senthilp.com/)
 
 ##License 
