@@ -22,8 +22,8 @@ Options:
                     Uses current working directory if not specified
 --url | -u          The web page URL to take screenshots
 --out-dir | -o      The output directory to save the screenshots. 
-                    Optional when an input directory is provided. 
-                    When a URL is provided and output directory is missing, it uses current working directory as output directory
+                    Optional when an input directory is provided, as screenshots are saved adjacent to the HTML files
+                    When a URL is provided and output directory is missing, current working directory is used as output directory
 --selectors | -s    A list of selectors to be applied on the HTML files or URL
 --exclude | -e      Paths|files|directories to be excluded. node_modules excluded by default.
                     A list can be provided -e test -e dist
@@ -33,6 +33,10 @@ Options:
 **Example 1:**
 ```
 modshot -i src/ui-modules -s .box -s .test -e temp
+```
+**Example 2:**
+```
+modshot -u http://pages.ebay.com/sitemap.html -s h1 -s .btn -o screenshots
 ```
 Running `modshot` with no options, uses the current directory as the input directory and scans for static HTML files.
 
