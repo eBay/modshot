@@ -126,7 +126,7 @@ function run() {
         casper.start(file);
 
         // Set the viewport
-        casper.viewport(1024, 768);
+        casper.viewport(375, 627);
 
         // Take screenshot
         let screenshotName = getScreenshotName(file);
