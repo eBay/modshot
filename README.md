@@ -7,6 +7,9 @@ modshot can operate in two modes
 2. **URL** - When a URL is provided (check [usage](#usage) below), modshot loads the URL with PhantomJS, takes a screenshot (or multiple screenshots if selectors are provided) and puts them in the provided output directory. For subsequent runs, these screenshots are used as baselines. It is advised to provide CSS selectors of modules as option, so module screenshots are taken instead of the whole page.
 
 If both modes (static HTML & URL) are provided, modshot starts both of them in parallel. If a modshot run fails, but the UI change was intentional, then the developer has to manually delete the baseline. modshot will create a new baseline in the next run.
+
+## Prerequisites
+* [PhantomJS](http://phantomjs.org/) 1.8.2 or greater, but less than 2.0. Installation instructions can be found [here](http://phantomjs.org/download.html). Please install this before installing modshot
  
 ## Usage
 Install modshot
