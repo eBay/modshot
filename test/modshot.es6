@@ -93,7 +93,7 @@ describe('CLI validation', () => {
                 assert.include(stdout, 'PASS', 'Output message should have the string PASS');
                 glob('test/fixtures/box/**/*.png', function(er, files) {
                     assert.isNull(er, 'Error should be null when retrieving screenshot png files');
-                    assert.isTrue(files.length >= 3);
+                    assert.isTrue(files.length >= 6);
                     done();
                 });
             });
@@ -105,7 +105,7 @@ describe('CLI validation', () => {
                 assert.include(stdout, 'PASS', 'Output message should have the string PASS');
                 glob('test/fixtures/**/*.png', function(er, files) {
                     assert.isNull(er, 'Error should be null when retrieving screenshot png files');
-                    assert.isTrue(files.length >= 5);
+                    assert.isTrue(files.length >= 10);
                     done();
                 });
             });
@@ -117,7 +117,7 @@ describe('CLI validation', () => {
                 assert.include(stdout, 'PASS', 'Output message should have the string PASS');
                 glob('test/screenshots/*.png', function(er, files) {
                     assert.isNull(er, 'Error should be null when retrieving screenshot png files from output dir');
-                    assert.equal(files.length, 2);
+                    assert.equal(files.length, 4);
                     done();
                 });
             });
@@ -148,7 +148,7 @@ describe('CLI validation', () => {
                 assert.include(stdout, 'PASS', 'Output message should have the string PASS');
                 glob('test/url/full/screenshots/*.png', function(er, files) {
                     assert.isNull(er, 'Error should be null when retrieving screenshot png files from output dir');
-                    assert.equal(files.length, 1);
+                    assert.equal(files.length, 2);
                     done();
                 });
             });
@@ -174,7 +174,7 @@ describe('CLI validation', () => {
                 assert.include(stdout, 'PASS', 'Output message should have the string PASS');
                 glob('test/url/full/screenshots/*.png', function(er, files) {
                     assert.isNull(er, 'Error should be null when retrieving screenshot png files from output dir');
-                    assert.equal(files.length, 1);
+                    assert.equal(files.length, 2);
                     glob('test/fixtures/**/*.png', function(er, files) {
                         assert.isNull(er, 'Error should be null when retrieving screenshot png files');
                         assert.isAbove(files.length, 0);

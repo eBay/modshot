@@ -6,7 +6,7 @@
 const origCasperScriptBaseDir = phantom.casperScriptBaseDir;
 phantom.casperScriptBaseDir = origCasperScriptBaseDir + '/..';
 
-var require = patchRequire(require), // jshint ignore:line
+const require = patchRequire(require), // jshint ignore:line
     _ = require('lodash'),
     fs = require('fs'),
     path = require('path'),
@@ -26,7 +26,21 @@ var require = patchRequire(require), // jshint ignore:line
     phantomcss = phantomcssPath ? require(path.join(phantomcssPath, 'phantomcss')) : null,
     screenshotDir = '/screenshots',
     failedDir = screenshotDir + '/failed',
-    resultsDir = screenshotDir + '/results';
+    resultsDir = screenshotDir + '/results',
+    profiles = [
+        {
+            "type": "mobile",
+            "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4", // jshint ignore:line
+            "width": 375,
+            "height": 627
+        },
+        {
+            "type": "desktop",
+            "userAgent": casper.options.pageSettings.userAgent,
+            "width": 1024,
+            "height": 768
+        }
+    ];
 
 // Reset phantom.casperScriptBaseDir
 phantom.casperScriptBaseDir = origCasperScriptBaseDir;
@@ -42,16 +56,20 @@ function exit(msg, code = 0) {
     return casper.exit(code);
 }
 
-function getScreenshotName(file) {
+function getScreenshotName(file, profileType) {
     let screenshotName = url.parse(String(file)).hostname;
     if (!screenshotName) {
         screenshotName = path.basename(file, '.html');
+    }
+    // Add type if present
+    if (profileType) {
+        screenshotName += `-${profileType}`;
     }
     return screenshotName;
 }
 
 function initPhantomCSS(dirPath) {
-    let screenshotRoot = dirPath + screenshotDir,
+    const screenshotRoot = dirPath + screenshotDir,
         failedComparisonsRoot = dirPath + failedDir;
 
     // Remove failed directory if any
@@ -112,46 +130,55 @@ function run() {
         return;
     }
 
-    let file = options.file;
+    const file = options.file;
     if (!file) {
         exit('Please provide a html file path to continue', 1);
         return;
     }
-    let dirPath = options.outputDir || path.dirname(file);
+    const dirPath = options.outputDir || path.dirname(file);
 
     // Initialize PhantomCSS
     initPhantomCSS(dirPath);
 
-    casper.test.begin('Visual testing - ' + file, test => {
-        casper.start(file);
+    // Run casper for every profile
+    profiles.forEach((profile, index) => {
+        casper.test.begin(`${profile.type.toUpperCase()} visual testing - ${file}`, test => {
+            // Set the user-agent
+            casper.options.pageSettings.userAgent = profile.userAgent;
 
-        // Set the viewport
-        casper.viewport(375, 627);
+            casper.start(file);
 
-        // Take screenshot
-        let screenshotName = getScreenshotName(file);
-        if (options.selectors) {
-            casper.then(() => {
-                let classNames = casper.evaluate(getClassNamesToCapture, options.selectors);
-                takeSelectorScreenshot(screenshotName, classNames);
+            // Set the viewport
+            casper.viewport(profile.width, profile.height);
+
+            // Take screenshot
+            const screenshotName = getScreenshotName(file, profile.type);
+            if (options.selectors) {
+                casper.then(() => {
+                    const classNames = casper.evaluate(getClassNamesToCapture, options.selectors);
+                    takeSelectorScreenshot(screenshotName, classNames);
+                });
+            } else {
+                casper.then(takeFullScreenshot.bind(undefined, screenshotName));
+            }
+
+            // Compare screenshot
+            casper.then(compareScreenshot);
+
+            // Run & wrap up the test
+            casper.run(() => {
+                // Clean up the results dir
+                fs.removeTree(dirPath + resultsDir);
+
+                casper.echo(`Finished visual testing for - ${file}`, 'COMMENT');
+                casper.echo(`Screenshots generated in the directory - ${dirPath + '/screenshots'}`, 'COMMENT');
+                test.done();
+                // Calling exit to prevent unsafe JavaScript error https://github.com/n1k0/casperjs/issues/1068
+                // Call after all profiles are iterated
+                if (index === profiles.length - 1) {
+                    casper.exit();
+                }
             });
-        } else {
-            casper.then(takeFullScreenshot.bind(undefined, screenshotName));
-        }
-
-        // Compare screenshot
-        casper.then(compareScreenshot);
-
-        // Run & wrap up the test
-        casper.run(() => {
-            // Clean up the results dir
-            fs.removeTree(dirPath + resultsDir);
-
-            casper.echo(`Finished visual testing for - ${file}`, 'INFO');
-            casper.echo(`Screenshots generated in the directory - ${dirPath.replace(/\/screenshots\/?$/i, '') + '/screenshots'}`, 'INFO'); // jshint ignore:line
-            test.done();
-            // Calling exit to prevent unsafe JavaScript error https://github.com/n1k0/casperjs/issues/1068
-            casper.exit();
         });
     });
 }
