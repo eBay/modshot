@@ -147,7 +147,8 @@ function run() {
             // Clean up the results dir
             fs.removeTree(dirPath + resultsDir);
 
-            console.log('Finished visual testing for - ' + file);
+            casper.echo(`Finished visual testing for - ${file}`, 'INFO');
+            casper.echo(`Screenshots generated in the directory - ${dirPath.replace(/\/screenshots\/?$/i, '') + '/screenshots'}`, 'INFO'); // jshint ignore:line
             test.done();
             // Calling exit to prevent unsafe JavaScript error https://github.com/n1k0/casperjs/issues/1068
             casper.exit();
