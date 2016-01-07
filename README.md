@@ -31,6 +31,8 @@ Options:
 --exclude | -e      Paths|files|directories to be excluded. node_modules excluded by default.
                     A list can be provided -e test -e dist
 --tolerance | -t    Mismatch tolerance percentage. Defaults to  0.05%
+--cookie | -c       The cookie value to be set in the cookie HTTP header
+--domain | -d       The domain to set the cookie. By defalut '*' would be used
 --help | -h         Displays this information
 ```
 **Example 1:**

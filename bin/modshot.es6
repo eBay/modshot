@@ -28,6 +28,8 @@ function man() {
     --exclude | -e      Paths|files|directories to be excluded. node_modules excluded by default.
                         A list can be provided -e test -e dist
     --tolerance | -t    Mismatch tolerance percentage. Defaults to  0.05%
+    --cookie | -c       The cookie value to be set in the cookie HTTP header
+    --domain | -d       The domain to set the cookie. By defalut '*' would be used
     --help | -h         Displays this information
     `;
     console.log(USAGE);
@@ -35,7 +37,8 @@ function man() {
 
 function parseOptions() {
     const DEFAULT_OPTIONS = {
-            'exclude': ['node_modules']
+            'exclude': ['node_modules'],
+            'domain': '*'
         },
         knownOpts = {
             'in-dir': path,
@@ -44,6 +47,8 @@ function parseOptions() {
             'selectors': Array,
             'exclude': Array,
             'tolerance': Number,
+            'cookie': String,
+            'domain': String,
             'help': Boolean
         },
         shortHands = {
@@ -53,6 +58,8 @@ function parseOptions() {
             's': ['--selectors'],
             'e': ['--exclude'],
             't': ['--tolerance'],
+            'c': ['--cookie'],
+            'd': ['--domain'],
             'h': ['--help']
         },
         resolved = _.merge({}, DEFAULT_OPTIONS, nopt(knownOpts, shortHands), (a, b) => {

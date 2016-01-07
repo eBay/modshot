@@ -131,13 +131,15 @@ function getFileList(inputDir, excludeList) {
     return eventEmitter;
 }
 
-function runCasper(file, selectors, tolerance, outDir) {
+function runCasper(file, outDir, {selectors, tolerance, cookie, domain}) { // jshint ignore:line
     let casperRunner = path.join(__dirname, 'casper-runner.js'),
         args = ['test', casperRunner,
-                '--file=' + file,
-                '--selectors=' + selectors,
-                '--tolerance=' + tolerance,
-                '--outputDir=' + outDir];
+                `--file=${file}`,
+                `--selectors=${selectors}`,
+                `--tolerance=${tolerance}`,
+                `--cookie=${cookie}`,
+                `--domain=${domain}`,
+                `--outputDir=${outDir}`];
 
     try {
         let casperjsExe = lookup(casperjsExePath, true);
@@ -182,7 +184,7 @@ function processURL(urlStr, opts) {
         return;
     }
 
-    runCasper(urlStr, opts.selectors, opts.tolerance, outDir);
+    runCasper(urlStr, outDir, opts);
 }
 
 function processInputDir(inDir, opts) {
@@ -195,7 +197,7 @@ function processInputDir(inDir, opts) {
 
     getFileList(inDir, opts.exclude).on('file', file => {
         // Run casper now
-        runCasper(file, opts.selectors, opts.tolerance, outDir);
+        runCasper(file, outDir, opts);
     });
 }
 

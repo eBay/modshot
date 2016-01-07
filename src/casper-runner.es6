@@ -16,7 +16,9 @@ const require = patchRequire(require), // jshint ignore:line
         'selectors': null,
         'tolerance': null,
         'phantomcssPath': null,
-        'outputDir': null
+        'outputDir': null,
+        'cookie': null,
+        'domain': null
     }, casper.cli.options, (a, b) => {
         if (b === 'undefined') {
             return null;
@@ -122,6 +124,27 @@ function compareScreenshot() {
     phantomcss.compareSession();
 }
 
+function setCookie(cookie, domain) {
+    if (!cookie) {
+        return;
+    }
+
+    cookie.split(';')
+        .map(cookielet => {
+            const pair = cookielet.trim().split('=');
+            return {
+                name: pair[0],
+                value: pair[1]
+            };
+        }).forEach(({name, value}) => {
+            phantom.addCookie({
+                "name": name,
+                "value": value,
+                "domain": domain
+            });
+        });
+}
+
 function run() {
 
     // Check if phantomcss is present
@@ -139,6 +162,11 @@ function run() {
 
     // Initialize PhantomCSS
     initPhantomCSS(dirPath);
+
+    // Set cookie
+    if (options.cookie) {
+        setCookie(options.cookie, options.domain);
+    }
 
     // Run casper for every profile
     profiles.forEach((profile, index) => {

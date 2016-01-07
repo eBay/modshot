@@ -154,6 +154,19 @@ describe('CLI validation', () => {
             });
         });
 
+        it('should generate screenshot for a URL in the test/url/full directory with cookie & domain options', done => {
+
+            exec('node bin/modshot -u http://pages.ebay.com/sitemap.html -o test/url/full/ -c "k=v; a=b" -d ebay.com' +
+            toleranceOption, (error, stdout) => {
+                assert.include(stdout, 'PASS', 'Output message should have the string PASS');
+                glob('test/url/full/screenshots/*.png', function(er, files) {
+                    assert.isNull(er, 'Error should be null when retrieving screenshot png files from output dir');
+                    assert.equal(files.length, 2);
+                    done();
+                });
+            });
+        });
+
         it('should generate screenshots for a URL in test/url/selectors directory for the provided selectors', done => {
 
             exec('node bin/modshot -u http://pages.ebay.com/sitemap.html -o test/url/selectors/ -s h1 -s h2' +
