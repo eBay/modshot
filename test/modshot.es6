@@ -156,7 +156,7 @@ describe('CLI validation', () => {
 
         it('should generate screenshot for a URL in the test/url/full directory with cookie & domain options', done => {
 
-            exec('node bin/modshot -u http://pages.ebay.com/sitemap.html -o test/url/full/ -c "k=v; a=b" -d ebay.com' +
+            exec('node bin/modshot -u http://pages.ebay.com/sitemap.html -o test/url/full/ -c "k=v; a=b" -d xyz.com' +
             toleranceOption, (error, stdout) => {
                 assert.include(stdout, 'PASS', 'Output message should have the string PASS');
                 glob('test/url/full/screenshots/*.png', function(er, files) {
