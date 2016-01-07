@@ -49,6 +49,12 @@ modshot -i src/ui-modules -u http://pages.ebay.com/sitemap.html -o screenshots -
 ```
 Running `modshot` with no options, uses the current directory as the input directory and scans for static HTML files.
 
+##Authenticated Pages
+To run modshot on authenticated pages i.e. pages behind a sign-in, pass in the `cookie` and its associated `domain` values. modshot will set the HTTP cookie header before making the page request. For a server this would be a normal cookie based authentication.
+```
+modshot -u http://pages.ebay.com/sitemap.html -o screenshots -c "k=v; a=b" -d xyz.com
+```
+
 ##Testing
 The testing suite is available in the [test](https://github.com/eBay/modshot/tree/master/test) directory. To run the tests - clone/fork the [repo](https://github.com/eBay/modshot), 
 install the package `$ npm install` and run
