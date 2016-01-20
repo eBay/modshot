@@ -122,6 +122,18 @@ describe('CLI validation', () => {
                 });
             });
         });
+
+        it('should generate screenshots prepended with the provided prefix for HTML files in fixtures', done => {
+
+            exec('node bin/modshot -i test -o test/prefix/static -p modshot' + toleranceOption, (error, stdout) => {
+                assert.include(stdout, 'PASS', 'Output message should have the string PASS');
+                glob('test/prefix/static/screenshots/modshot-*.png', function(er, files) {
+                    assert.isNull(er, 'Error should be null when retrieving screenshot png files from output dir');
+                    assert.equal(files.length, 4);
+                    done();
+                });
+            });
+        });
     });
 
     describe('URL input validation', () => {
@@ -175,6 +187,19 @@ describe('CLI validation', () => {
                 glob('test/url/selectors/screenshots/*.png', function(er, files) {
                     assert.isNull(er, 'Error should be null when retrieving screenshot png files from output dir');
                     assert.isAbove(files.length, 0);
+                    done();
+                });
+            });
+        });
+
+        it('should generate screenshots prepended with the provided prefix for a URL', done => {
+
+            exec('node bin/modshot -u http://pages.ebay.com/sitemap.html -o test/prefix/url -p modshot' +
+            toleranceOption, (error, stdout) => {
+                assert.include(stdout, 'PASS', 'Output message should have the string PASS');
+                glob('test/prefix/url/screenshots/modshot-*.png', function(er, files) {
+                    assert.isNull(er, 'Error should be null when retrieving screenshot png files from output dir');
+                    assert.equal(files.length, 2);
                     done();
                 });
             });

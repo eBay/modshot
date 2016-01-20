@@ -18,7 +18,8 @@ const require = patchRequire(require), // jshint ignore:line
         'phantomcssPath': null,
         'outputDir': null,
         'cookie': null,
-        'domain': null
+        'domain': null,
+        'prefix': null
     }, casper.cli.options, (a, b) => {
         if (b === 'undefined') {
             return null;
@@ -58,7 +59,7 @@ function exit(msg, code = 0) {
     return casper.exit(code);
 }
 
-function getScreenshotName(file, profileType) {
+function getScreenshotName(file, profileType, prefix) {
     let screenshotName = url.parse(String(file)).hostname;
     if (!screenshotName) {
         screenshotName = path.basename(file, '.html');
@@ -67,6 +68,12 @@ function getScreenshotName(file, profileType) {
     if (profileType) {
         screenshotName += `-${profileType}`;
     }
+
+    // Prefix the name if present
+    if (prefix) {
+        screenshotName = `${prefix}-${screenshotName}`;
+    }
+
     return screenshotName;
 }
 
@@ -180,7 +187,7 @@ function run() {
             casper.viewport(profile.width, profile.height);
 
             // Take screenshot
-            const screenshotName = getScreenshotName(file, profile.type);
+            const screenshotName = getScreenshotName(file, profile.type, options.prefix);
             if (options.selectors) {
                 casper.then(() => {
                     const classNames = casper.evaluate(getClassNamesToCapture, options.selectors);

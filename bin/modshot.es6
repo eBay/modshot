@@ -30,6 +30,7 @@ function man() {
     --tolerance | -t    Mismatch tolerance percentage. Defaults to  0.05%
     --cookie | -c       The cookie value to be set in the cookie HTTP header
     --domain | -d       The domain to set the cookie. By defalut '*' would be used
+    --prefix | -p       A prefix that would be prepended to the screenshot image name
     --help | -h         Displays this information
     `;
     console.log(USAGE);
@@ -49,6 +50,7 @@ function parseOptions() {
             'tolerance': Number,
             'cookie': String,
             'domain': String,
+            'prefix': String,
             'help': Boolean
         },
         shortHands = {
@@ -60,6 +62,7 @@ function parseOptions() {
             't': ['--tolerance'],
             'c': ['--cookie'],
             'd': ['--domain'],
+            'p': ['--prefix'],
             'h': ['--help']
         },
         resolved = _.merge({}, DEFAULT_OPTIONS, nopt(knownOpts, shortHands), (a, b) => {

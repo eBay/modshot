@@ -131,7 +131,7 @@ function getFileList(inputDir, excludeList) {
     return eventEmitter;
 }
 
-function runCasper(file, outDir, {selectors, tolerance, cookie, domain}) { // jshint ignore:line
+function runCasper(file, outDir, {selectors, tolerance, cookie, domain, prefix}) { // jshint ignore:line
     let casperRunner = path.join(__dirname, 'casper-runner.js'),
         args = ['test', casperRunner,
                 `--file=${file}`,
@@ -139,6 +139,7 @@ function runCasper(file, outDir, {selectors, tolerance, cookie, domain}) { // js
                 `--tolerance=${tolerance}`,
                 `--cookie=${cookie}`,
                 `--domain=${domain}`,
+                `--prefix=${prefix}`,
                 `--outputDir=${outDir}`];
 
     try {

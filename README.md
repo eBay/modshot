@@ -33,6 +33,7 @@ Options:
 --tolerance | -t    Mismatch tolerance percentage. Defaults to  0.05%
 --cookie | -c       The cookie value to be set in the cookie HTTP header
 --domain | -d       The domain to set the cookie. By defalut '*' would be used
+--prefix | -p       A prefix that would be prepended to the screenshot image name
 --help | -h         Displays this information
 ```
 **Example 1:**
@@ -46,6 +47,10 @@ modshot -u http://pages.ebay.com/sitemap.html -s h1 -s .btn -o screenshots
 **Example 3:**
 ```
 modshot -i src/ui-modules -u http://pages.ebay.com/sitemap.html -o screenshots -t 15
+```
+**Example 4:**
+```
+modshot -u http://pages.ebay.com/sitemap.html -p projectX -o screenshots
 ```
 Running `modshot` with no options, uses the current directory as the input directory and scans for static HTML files.
 
