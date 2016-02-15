@@ -28,6 +28,7 @@ function man() {
     --exclude | -e      Paths|files|directories to be excluded. node_modules excluded by default.
                         A list can be provided -e test -e dist
     --tolerance | -t    Mismatch tolerance percentage. Defaults to  0.05%
+    --millis | -m       The number of milliseconds to wait after page load, to take the screenshot. Defaults to 0
     --cookie | -c       The cookie value to be set in the cookie HTTP header
     --domain | -d       The domain to set the cookie. By defalut '*' would be used
     --prefix | -p       A prefix that would be prepended to the screenshot image name
@@ -48,6 +49,7 @@ function parseOptions() {
             'selectors': Array,
             'exclude': Array,
             'tolerance': Number,
+            'millis': Number,
             'cookie': String,
             'domain': String,
             'prefix': String,
@@ -60,6 +62,7 @@ function parseOptions() {
             's': ['--selectors'],
             'e': ['--exclude'],
             't': ['--tolerance'],
+            'm': ['--millis'],
             'c': ['--cookie'],
             'd': ['--domain'],
             'p': ['--prefix'],
