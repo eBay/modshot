@@ -20,7 +20,8 @@
   },
   "scripts": {
     "test": "grunt test",
-    "compile": "grunt build"
+    "compile": "grunt build",
+    "lint": "eslint -c ./eslint-config/.eslintrc --ext .es6"
   },
   "dependencies": {
     "babel-runtime": "~5.6.7",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "chai": "^3.3.0",
+    "eslint": "^2.0.0",
     "glob": "^5.0.15",
     "grunt": "~0.4.5",
     "grunt-babel": "~5.0.1",
