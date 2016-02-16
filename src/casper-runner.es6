@@ -107,11 +107,11 @@ function getClassNamesToCapture(selectors) {
 
     let classNames = [];
 
-    selectors.forEach(selector => {
+    selectors.forEach((selector, selectorIndex) => {
         let domNodes = Array.prototype.map.call(document.querySelectorAll(selector), node => node);
         // populate the class names
-        domNodes.forEach((element, index) => {
-            let className =  'modshot-' + index;
+        domNodes.forEach((element, elementIndex) => {
+            let className =  'modshot-' + selectorIndex + '-' + elementIndex;
             element.setAttribute('class', element.getAttribute('class') + ' ' + className);
             classNames.push(className);
         });
