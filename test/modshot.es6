@@ -101,7 +101,7 @@ describe('CLI validation', () => {
 
         it('should generate screenshots for HTML files only for selector regions with multiple -s option', done => {
 
-            exec('node bin/modshot -i test -s .box -s test1' + toleranceOption, (error, stdout) => {
+            exec('node bin/modshot -i test -s .box -s .test1' + toleranceOption, (error, stdout) => {
                 assert.include(stdout, 'PASS', 'Output message should have the string PASS');
                 glob('test/fixtures/**/*.png', function(er, files) {
                     assert.isNull(er, 'Error should be null when retrieving screenshot png files');
