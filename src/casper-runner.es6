@@ -1,10 +1,11 @@
+/* eslint "no-use-before-define": 0 */
 'use strict';
 
 /* globals patchRequire,casper,phantom */
 
 // override the phantom.casperScriptBaseDir temporarily
 const origCasperScriptBaseDir = phantom.casperScriptBaseDir;
-phantom.casperScriptBaseDir = origCasperScriptBaseDir + '/..';
+phantom.casperScriptBaseDir = `${origCasperScriptBaseDir}/..`;
 
 const require = patchRequire(require), // jshint ignore:line
     _ = require('lodash'),
@@ -24,13 +25,15 @@ const require = patchRequire(require), // jshint ignore:line
         if (b === 'undefined') {
             return null;
         }
+        return undefined;
     }),
     phantomcssPath = options.phantomcssPath,
     phantomcss = phantomcssPath ? require(path.join(phantomcssPath, 'phantomcss')) : null,
     screenshotDir = '/screenshots',
-    failedDir = screenshotDir + '/failed',
-    resultsDir = screenshotDir + '/results',
+    failedDir = `${screenshotDir}/failed`,
+    resultsDir = `${screenshotDir}/results`,
     profiles = [
+        /*eslint-disable */
         {
             "type": "mobile",
             "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4", // jshint ignore:line
@@ -43,6 +46,7 @@ const require = patchRequire(require), // jshint ignore:line
             "width": 1024,
             "height": 768
         }
+        /*eslint-disable */
     ];
 
 // Reset phantom.casperScriptBaseDir
@@ -103,16 +107,15 @@ function takeFullScreenshot(screenshotName) {
 
 function getClassNamesToCapture(selectors) {
     // convert the selectors to an array
-    selectors = selectors.split(',');
+    const selectorsArr = selectors.split(','),
+        classNames = [];
 
-    let classNames = [];
-
-    selectors.forEach((selector, selectorIndex) => {
-        let domNodes = Array.prototype.map.call(document.querySelectorAll(selector), node => node);
+    selectorsArr.forEach((selector, selectorIndex) => {
+        const domNodes = Array.prototype.map.call(document.querySelectorAll(selector), node => node);
         // populate the class names
         domNodes.forEach((element, elementIndex) => {
-            let className =  'modshot-' + selectorIndex + '-' + elementIndex;
-            element.setAttribute('class', element.getAttribute('class') + ' ' + className);
+            const className = `modshot-${selectorIndex}-${elementIndex}`;
+            element.setAttribute('class', `${element.getAttribute('class')} ${className}`);
             classNames.push(className);
         });
     });
@@ -123,7 +126,7 @@ function getClassNamesToCapture(selectors) {
 function takeSelectorScreenshot(screenshotName, classNames) {
     // Take screenshot for all the class names
     classNames.forEach((className, index) => {
-        phantomcss.screenshot('.' + className, screenshotName + '-' + index);
+        phantomcss.screenshot(`.${className}`, `${screenshotName}-${index}`);
     });
 }
 
@@ -143,7 +146,7 @@ function setCookie(cookie, domain) {
                 name: pair[0],
                 value: pair[1]
             };
-        }).forEach(({name, value}) => {
+        }).forEach(({ name, value }) => {
             phantom.addCookie({
                 "name": name,
                 "value": value,
@@ -153,7 +156,6 @@ function setCookie(cookie, domain) {
 }
 
 function run() {
-
     // Check if phantomcss is present
     if (!phantomcss) {
         exit('PhantomCSS not found', 1);
@@ -206,7 +208,7 @@ function run() {
                 fs.removeTree(dirPath + resultsDir);
 
                 casper.echo(`Finished visual testing for - ${file}`, 'COMMENT');
-                casper.echo(`Screenshots generated in the directory - ${dirPath + '/screenshots'}`, 'COMMENT');
+                casper.echo(`Screenshots generated in the directory - ${dirPath}/screenshots`, 'COMMENT');
                 test.done();
                 // Calling exit to prevent unsafe JavaScript error https://github.com/n1k0/casperjs/issues/1068
                 // Call after all profiles are iterated

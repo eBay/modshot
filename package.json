@@ -21,7 +21,7 @@
   "scripts": {
     "test": "grunt test",
     "compile": "grunt build",
-    "lint": "eslint -c ./eslint-config/.eslintrc --ext .es6"
+    "lint": "eslint -c ./eslint-config/.eslintrc --ext .es6 ."
   },
   "dependencies": {
     "babel-runtime": "~5.6.7",

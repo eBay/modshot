@@ -37,7 +37,7 @@
         "linebreak-style": 0,
         // specify the maximum length of a line in your program
         // https://github.com/eslint/eslint/blob/master/docs/rules/max-len.md
-        "max-len": [2, 100, 2, {
+        "max-len": [2, 120, 2, {
             "ignoreUrls": true,
             "ignoreComments": false
         }],
@@ -89,7 +89,7 @@
         // http://eslint.org/docs/rules/quote-props.html
         "quote-props": [2, "as-needed", { "keywords": false, "unnecessary": false, "numbers": false }],
         // specify whether double or single quotes should be used
-        "quotes": [2, "single", "avoid-escape"],
+        "quotes": [0, "single", "avoid-escape"],
         // require identifiers to match the provided regular expression
         "id-match": 0,
         // enforce spacing before and after semicolons
