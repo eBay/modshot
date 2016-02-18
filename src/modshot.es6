@@ -130,13 +130,13 @@ function getFileList(inputDir, excludeList) {
 
 function runCasper(file, // jshint ignore:line
                     outDir,
-                    { selectors, tolerance, cookie, domain, prefix, millis }) {
+                    { selectors, tolerance, cookie, domain, prefix, delay }) {
     const casperRunner = path.join(__dirname, 'casper-runner.js'),
         args = ['test', casperRunner,
                 `--file=${file}`,
                 `--selectors=${selectors}`,
                 `--tolerance=${tolerance}`,
-                `--millis=${millis}`,
+                `--delay=${delay}`,
                 `--cookie=${cookie}`,
                 `--domain=${domain}`,
                 `--prefix=${prefix}`,
