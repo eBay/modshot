@@ -2,7 +2,7 @@
 
 'use strict';
 
-var nopt = require('nopt'),
+const nopt = require('nopt'),
     path = require('path'),
     url = require('url'),
     _ = require('lodash');
@@ -72,6 +72,7 @@ function parseOptions() {
             if (Array.isArray(a)) {
                 return a.concat(b);
             }
+            return undefined;
         });
 
     if (resolved.help) {

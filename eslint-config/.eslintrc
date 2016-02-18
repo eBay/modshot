@@ -1,0 +1,20 @@
+{
+    "extends": [
+        "./.eslintrc-bp",
+        "./.eslintrc-errors",
+        "./.eslintrc-legacy",
+        "./.eslintrc-node",
+        "./.eslintrc-style",
+        "./.eslintrc-variables",
+        "./.eslintrc-es6"
+    ],
+    "rules": {
+    },
+    "env": {
+        "browser": true,
+        "node": true,
+        "amd": false,
+        "mocha": false,
+        "jasmine": false
+    }    
+}

@@ -1,10 +1,10 @@
 'use strict';
 
-var path = require('path'),
+const path = require('path'),
     fs = require('fs'),
     url = require('url'),
     EventEmitter = require('events').EventEmitter,
-    childSpawn = require("child_process").spawn,
+    childSpawn = require('child_process').spawn,
     _ = require('lodash'),
     casperjsExePath = 'casperjs/bin/casperjs',
     phantomcssModuleName = 'phantomcss';
@@ -14,7 +14,8 @@ function stat(file) {
     return new Promise((resolve, reject) => {
         fs.stat(file, (err, stats) => {
             if (err) {
-                return reject(err);
+                reject(err);
+                return;
             }
             resolve(stats);
         });
@@ -28,8 +29,8 @@ function isURLValid(urlStr) {
 
 function isValidOutputDir(outDir) {
     try {
-        const stat = fs.statSync(outDir);
-        return stat.isDirectory();
+        const statSync = fs.statSync(outDir);
+        return statSync.isDirectory();
     } catch (ex) {
         // Do nothing
     }
@@ -46,9 +47,9 @@ function lookup(filePath, isExecutable) {
             absPath += '.cmd';
         }
         try {
-            let stat = fs.statSync(absPath);
+            const statSync = fs.statSync(absPath);
             if (isExecutable) {
-                if (stat.isFile()) {
+                if (statSync.isFile()) {
                     fullFilePath = absPath;
                     return true;
                 }
@@ -69,7 +70,8 @@ function readdir(dir) {
     return new Promise((resolve, reject) => {
         fs.readdir(dir, (err, files) => {
             if (err) {
-                return reject(err);
+                reject(err);
+                return;
             }
             resolve(files);
         });
@@ -85,32 +87,27 @@ function isExcluded(file, excludeList) {
         // Map each item in the excludeList to a RegExp pattern
         .map(exclude => {
             // Strip '/' before and after
-            exclude = exclude.replace(/^\/|\/$/g, '');
-            return new RegExp(`^${exclude}$|\/${exclude}$|^${exclude}\/|\/${exclude}\/`, 'i');
+            const excludeStr = exclude.replace(/^\/|\/$/g, '');
+            return new RegExp(`^${excludeStr}$|\/${excludeStr}$|^${excludeStr}\/|\/${excludeStr}\/`, 'i');
         })
         // Test the pattern with the file path and return immediately if passed
         .every(pattern => !pattern.test(file));
 }
 
 function getFileList(inputDir, excludeList) {
-    let eventEmitter = new EventEmitter(),
+    const eventEmitter = new EventEmitter(),
         readdirWrapper = dir => {
-            readdir(dir).then(list => {
-                return Promise.all(
-                    // map the file list to a full valid apath
-                    list.map(item => path.join(dir, item))
-                    // Filter out the excludes
-                    .filter(item => !isExcluded(item, excludeList))
-                    // Map each file item to a stat promise
-                    .map(item => {
-                        // Return a promise
-                        return stat(item).then(stats =>  _.assign(stats, {
-                            origFile: item
-                        }));
-                    }));
-            }).then(statsList => {
+            readdir(dir).then(list => Promise.all(
+                // map the file list to a full valid apath
+                list.map(item => path.join(dir, item))
+                // Filter out the excludes
+                .filter(item => !isExcluded(item, excludeList))
+                // Map each file item to a stat promise
+                .map(item => stat(item).then(stats => _.assign(stats, { origFile: item }))
+                ))
+            ).then(statsList => {
                 statsList.forEach((stats) => {
-                    let file = stats.origFile;
+                    const file = stats.origFile;
                     if (stats.isDirectory(file)) {
                         // Call the wrapper again
                         readdirWrapper(file);
@@ -131,8 +128,10 @@ function getFileList(inputDir, excludeList) {
     return eventEmitter;
 }
 
-function runCasper(file, outDir, {selectors, tolerance, cookie, domain, prefix, millis}) { // jshint ignore:line
-    let casperRunner = path.join(__dirname, 'casper-runner.js'),
+function runCasper(file, // jshint ignore:line
+                    outDir,
+                    { selectors, tolerance, cookie, domain, prefix, millis }) {
+    const casperRunner = path.join(__dirname, 'casper-runner.js'),
         args = ['test', casperRunner,
                 `--file=${file}`,
                 `--selectors=${selectors}`,
@@ -144,7 +143,7 @@ function runCasper(file, outDir, {selectors, tolerance, cookie, domain, prefix, 
                 `--outputDir=${outDir}`];
 
     try {
-        let casperjsExe = lookup(casperjsExePath, true);
+        const casperjsExe = lookup(casperjsExePath, true);
         // Check if casperjs executable is present
         if (!casperjsExe) {
             console.error('casperjs executable not found');
@@ -152,16 +151,16 @@ function runCasper(file, outDir, {selectors, tolerance, cookie, domain, prefix, 
         }
 
         // Check if phantomCSS module is present executable is present
-        let phantomcssPath = lookup(phantomcssModuleName);
+        const phantomcssPath = lookup(phantomcssModuleName);
         if (!phantomcssPath) {
             console.error('phantomcss not found');
             return;
         }
 
         // Add phantomcssPath to the args
-        args.push('--phantomcssPath=' + phantomcssPath);
+        args.push(`--phantomcssPath=${phantomcssPath}`);
 
-        let casperjs = childSpawn(casperjsExe, args); // Start casper JS with arguments
+        const casperjs = childSpawn(casperjsExe, args); // Start casper JS with arguments
         // Log the data output
         casperjs.stdout.on('data', data => console.log(data.toString()));
 
