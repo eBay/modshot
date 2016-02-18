@@ -199,6 +199,9 @@ function run() {
                 casper.then(takeFullScreenshot.bind(undefined, screenshotName));
             }
 
+            if (options.delay) {
+                casper.then(() => casper.wait(options.delay));
+            }
             // Compare screenshot
             casper.then(compareScreenshot);
 
