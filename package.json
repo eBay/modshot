@@ -19,7 +19,7 @@
     "modshot": "./bin/modshot.js"
   },
   "scripts": {
-    "test": "grunt test",
+    "test": "npm run lint & grunt test",
     "compile": "grunt build",
     "lint": "eslint -c ./eslint-config/.eslintrc --ext .es6 ."
   },
