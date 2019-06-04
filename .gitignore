@@ -30,3 +30,4 @@ node_modules
 src/**/*.js
 test/**/*.js
 bin/**/*.js
+package-lock.json
