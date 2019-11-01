@@ -38,7 +38,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-loader": "^8.0.6",
     "chai": "^3.3.0",
-    "eslint": "^2.0.0",
+    "eslint": "^6.6.0",
     "glob": "^5.0.15",
     "grunt": "^1.0.4",
     "grunt-babel": "^8.0.0",
